@@ -15,11 +15,8 @@ from .Models.Predictors.NotSerial import NotSerialPredictor
 from .Preprocess import get_snippets, get_not_nan_indices
 from .DataRead import ClassifierDataset, PredictorDataset
 from .Utils import Trainer, classifier_score, check_model_classifier
-from utils.logs import log_func
 
 
-def model_log_func(*args):
-    log_func(*args, level='sanni_model')
 
 
 mse = torch.nn.MSELoss()
