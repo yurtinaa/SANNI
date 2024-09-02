@@ -2,7 +2,7 @@
 
 from torch import nn
 import torch
-from lib.SANNI_v2.Models.Classifier import Classifier
+from Models.Classifier import Classifier
 
 
 class Predictor(nn.Module):
@@ -15,9 +15,9 @@ class Predictor(nn.Module):
                  inside_count=0,
                  batch_norm=False,
                  hidden_dim=32,
-                 num_layers=2,
+                 num_layers=1,
                  kernel=5,
-                 with_h=True,
+                 with_h=False,
                  backward=False,
                  cell='gru',
                  config=None
@@ -110,6 +110,8 @@ class Predictor(nn.Module):
                                       device=self.device)
 
     def forward(self, x):
+
+
         if self.batch_norm is not None:
             x = self.batch_norm(x)
         x = self._augmentation(x)

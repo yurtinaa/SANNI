@@ -1,7 +1,7 @@
 from .Predictor import Predictor
 from torch import nn
 import torch
-from lib.SANNI_v2.Models.Classifier import Classifier
+from Models.Classifier import Classifier
 
 
 class ShortPredictor(Predictor):

@@ -11,7 +11,7 @@ from matrixprofile.algorithms.snippets import snippets
 from sklearn import preprocessing
 import json
 
-from lib.SANNI.Preprocess.const import *
+# from lib.SANNI.Preprocess.const import *
 import time
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
@@ -20,11 +20,11 @@ from sklearn.metrics import r2_score
 
 # from API import Image
 
-from utils.logs import log_func as lg_f
-
-
-def log_func(*args):
-    lg_f(*args, level='sanni_preprocc')
+# from utils.logs import log_func as lg_f
+#
+#
+# def log_func(*args):
+#     lg_f(*args, level='sanni_preprocc')
 
 
 def check_intersections(arr,
@@ -139,53 +139,54 @@ def augmentation(data: pd.DataFrame, e=0.01):
     return data
 
 
-def create_dataset(size_subsequent: int, dataset, snippet_count=0):
-    """
-    Создает zip архив в директории датасета с размеченными датасетами
-    :param size_subsequent: Размер подпоследовательности
-    :param dataset: Директория датасета
-    :param snippet_count: минимальный fraction
-    :return Возращает колличество сниппетов
-    """
-
-    data_norm, scaler = normalize(dataset)
-    # pickle.dump(scaler, (dataset / FILE_SCALER).open('wb'))
-    # data_norm = data
-    # print(data_norm.shape)
-    # FIXME на время сравнения с орбитс
-    # np.savetxt(dataset / NORM_DATA_FILE_NAME, data_norm)
-    log_func("Начал поиск сниппетов", __name__)
-
-    max_snippet = -1
-    for idx, data in enumerate(data_norm.T):
-        if snippet_count == 0:
-            distant = get_distances(ts=data, snippet_size=size_subsequent)
-            count_snippet = get_count(distances=distant,
-                                      snippet_size=size_subsequent,
-                                      len_ts=len(data))
-            snippet_count = count_snippet
-        else:
-            count_snippet = snippet_count
-        if count_snippet > max_snippet:
-            max_snippet = count_snippet
-        log_func(f"Для {idx + 1} признака найденно снипеттов:{count_snippet}")
-        snippet_list = search_snippet(data=data,
-                                      snippet_count=snippet_count,
-                                      size_subsequent=size_subsequent)
-        snippet_list.snippet = snippet_list.snippet.apply(lambda x: json.dumps(x.tolist()))
-        snippet_list.to_csv(dataset / SNIPPET_FILE_NAME.format(idx + 1), compression='gzip')
-
-    result = {
-        "size_subsequent": size_subsequent,
-        "snippet_count": max_snippet,
-        "classifier_model": False,
-        "save": True
-    }
-
-    with open(dataset / CURRENT_PARAMS_FILE_NAME, 'w') as outfile:
-        json.dump(result, outfile)
-    print("Сохранил сниппеты")
-    return max_snippet, scaler
+# def create_dataset(size_subsequent: int, dataset, snippet_count=0):
+#     """
+#     Создает zip архив в директории датасета с размеченными датасетами
+#     :param size_subsequent: Размер подпоследовательности
+#     :param dataset: Директория датасета
+#     :param snippet_count: минимальный fraction
+#     :return Возращает колличество сниппетов
+#     """
+#
+#     data_norm, scaler = normalize(dataset)
+#     # pickle.dump(scaler, (dataset / FILE_SCALER).open('wb'))
+#     # data_norm = data
+#     # print(data_norm.shape)
+#     # FIXME на время сравнения с орбитс
+#     # np.savetxt(dataset / NORM_DATA_FILE_NAME, data_norm)
+#     log_func("Начал поиск сниппетов", __name__)
+#
+#     max_snippet = -1
+#     for idx, data in enumerate(data_norm.T):
+#         if snippet_count == 0:
+#             distant = get_distances(ts=data,
+#                                     snippet_size=size_subsequent)
+#             count_snippet = get_count(distances=distant,
+#                                       snippet_size=size_subsequent,
+#                                       len_ts=len(data))
+#             snippet_count = count_snippet
+#         else:
+#             count_snippet = snippet_count
+#         if count_snippet > max_snippet:
+#             max_snippet = count_snippet
+#         log_func(f"Для {idx + 1} признака найденно снипеттов:{count_snippet}")
+#         snippet_list = search_snippet(data=data,
+#                                       snippet_count=snippet_count,
+#                                       size_subsequent=size_subsequent)
+#         snippet_list.snippet = snippet_list.snippet.apply(lambda x: json.dumps(x.tolist()))
+#         snippet_list.to_csv(dataset / SNIPPET_FILE_NAME.format(idx + 1), compression='gzip')
+#
+#     result = {
+#         "size_subsequent": size_subsequent,
+#         "snippet_count": max_snippet,
+#         "classifier_model": False,
+#         "save": True
+#     }
+#
+#     with open(dataset / CURRENT_PARAMS_FILE_NAME, 'w') as outfile:
+#         json.dump(result, outfile)
+#     print("Сохранил сниппеты")
+#     return max_snippet, scaler
 
 
 def search_snippet(ts: np.ndarray,
@@ -254,8 +255,9 @@ def normalize(sequent: np.ndarray) -> (np.ndarray, preprocessing.MinMaxScaler):
     return x_scaled, min_max_scaler
 
 
-def get_distances(ts, indices):
-    window_size = int(np.floor(ts.shape[1] / 2))
+def get_distances(ts, indices, window_size=None):
+    if window_size is None:
+        window_size = int(np.floor(ts.shape[1] / 2))
 
     def func_calc(j):
         buffer = []
@@ -312,7 +314,7 @@ def get_score(y_true, y_predict):
     return loss
 
 
-def get_snippets(arr, count_snippet=-1):
+def get_snippets(arr, count_snippet=-1, windows_size=None):
     # nan_index = np.unique(np.where(np.isnan(arr))[0])
     # not_nan_index = np.arange(len(arr))
     # not_nan_index = [i for j, i in enumerate(not_nan_index) if j not in nan_index]
@@ -325,13 +327,13 @@ def get_snippets(arr, count_snippet=-1):
     snippets = []
     logging.info('Search snippet')
     for i in np.arange(arr.shape[2]):
-        distantes = get_distances(arr_not_nan[:, :, i], indices)
+        distantes = get_distances(arr_not_nan[:, :, i], indices, windows_size)
         if count_snippet == -1:
             count_snippet = get_count(distantes, indices)
         snippet = search_snippet(arr_not_nan[:, :, i],
                                  count_snippet, distantes, indices=indices)
         snippets.append(snippet)
-    return arr_not_nan, snippets, not_nan_index
+    return snippets
 
 
 def get_not_nan_indices(arr):

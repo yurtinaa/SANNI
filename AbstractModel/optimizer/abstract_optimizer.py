@@ -20,11 +20,13 @@ class AbstractOptimizer(ABC):
 
 @dataclass
 class Adam(AbstractOptimizer):
-    lr: float
-    amsgrad: bool
+    lr: float = 0.001
+    amsgrad: bool = True
 
     def __call__(self, frame_type: FrameworkType):
         if frame_type == FrameworkType.Torch:
             return lambda param: torch.optim.Adam(param,
                                                   lr=self.lr,
                                                   amsgrad=self.amsgrad)
+        else:
+            raise ValueError(f"Unsupported framework type: {frame_type}")

@@ -1,1 +1,1 @@
-from ..MPDE import MPDETorch as MPDELoss
+from MPDE import MPDETorch as MPDELoss

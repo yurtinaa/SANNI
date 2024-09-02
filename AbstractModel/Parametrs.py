@@ -2,24 +2,25 @@ from dataclasses import dataclass
 from enum import Enum
 
 from AbstractModel.FrameParam import FrameworkType
+from AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
 from AbstractModel.optimizer.abstract_scheduler import AbstractScheduler
-from optimizer.abstract_optimizer import AbstractOptimizer
+from AbstractModel.score import Score
+from AbstractModel.optimizer.abstract_optimizer import AbstractOptimizer
 from LossFunction import MPDELoss
 from abc import ABC, abstractmethod
 
 import torch
 
 
-
-
 @dataclass
 class NeuralNetworkConfig(ABC):
     batch_size: int
     epochs: int
-    lr: float
-    error_type: ErrorType
+    error_factory: AbstractErrorFactory
     optimizer_type: AbstractOptimizer
+    score_factory: Score = None
     scheduler_type: AbstractScheduler = None
+    early_stopping_patience: int = 0
 
     @property
     @abstractmethod
@@ -28,15 +29,18 @@ class NeuralNetworkConfig(ABC):
 
     @property
     @abstractmethod
-    def error(self):
+    def error(self) -> AbstractError:
         pass
 
-
+    @property
+    @abstractmethod
+    def score(self) -> Score:
+        pass
 
 
 @dataclass
 class TorchNNConfig(NeuralNetworkConfig):
-
+    device: str = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     @property
     def optimizer(self):
@@ -45,9 +49,14 @@ class TorchNNConfig(NeuralNetworkConfig):
     @property
     def error(self):
         """Геттер для получения класса ошибки на основе error_type."""
-        if self.error_type not in self._error_classes:
-            raise ValueError(f"Unknown error type {self.error_type}")
-        return self._error_classes[self.error_type]
+        return self.error_factory(FrameworkType.Torch)
+
+    @property
+    def score(self) -> Score:
+        """Геттер для получения класса ошибки на основе error_type."""
+        if self.score_factory is None:
+            return self.error_factory(FrameworkType.Torch)
+        return self.score_factory
 
     @property
     def scheduler(self):

@@ -71,6 +71,7 @@ class Classifier(nn.Module):
         x = self.last(x)
         x = x.reshape(-1, self.count_snippet, self.dim)
         x = nn.Softmax(dim=1)(x)
+
         return x
 
     def get_loss(self, predict, true):
