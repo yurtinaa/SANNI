@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from random import shuffle
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import numpy as np
 import torch
@@ -32,7 +32,7 @@ CLASSIFIER_SANNI_CONFIG = TorchNNConfig(
 @dataclass
 class SANNI(AbstractImpute):
     __classifier: Classifier = None
-    snippet_list: List[List[tuple[int, np.ndarray]]] = None
+    snippet_list: List[List[Tuple[int, np.ndarray]]] = None
     snippet_dict: List[Dict[int, np.ndarray]] = None
     __snippet_count: int = None
     classifier_config: NeuralNetworkConfig = field(default_factory=lambda: CLASSIFIER_SANNI_CONFIG)
