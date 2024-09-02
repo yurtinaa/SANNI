@@ -12,7 +12,7 @@ class SnippetAnnotation:
     class_count: int
 
     def annotate(self, X: np.ndarray) -> Tuple[List[Dict[int, np.ndarray]],
-    List[List[tuple[int, np.ndarray]]]]:
+    List[List[Tuple[int, np.ndarray]]]]:
         snippet_list = get_snippets(X,
                                     count_snippet=self.class_count,
                                     windows_size=self.fragment_size)
