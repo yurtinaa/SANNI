@@ -20,7 +20,7 @@ from Trainer.TorchTrainer import TorchTrainer, TorchModel
 
 CLASSIFIER_SANNI_CONFIG = TorchNNConfig(
     batch_size=32,
-    epochs=10,
+    epochs=0,
     error_factory=get_error(ErrorType.CE)(),
     score_factory=get_score(ScoreType.F1_SCORE),
     optimizer_type=Adam(lr=0.001,
@@ -101,7 +101,7 @@ class SANNI(AbstractImpute):
         loader = TorchTensorLoader(X=X,
                                    y=y,
                                    dataset_factory=ImputeLastDataset,
-                                   batch_size=self.classifier_config.batch_size,
+                                   batch_size=self.neural_network_config.batch_size,
                                    shuffle=True)
         result = TorchTrainer(current_model=self.__model,
                               config=self.neural_network_config,

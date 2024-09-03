@@ -61,15 +61,16 @@ class TorchTrainer(AbstractTrainer):
             self.__optimizer.zero_grad()
             x = x.to(self.device)
             y = y.to(self.device)
+            print(x.shape)
             with torch.set_grad_enabled(type_ == EpochType.TRAIN):
                 y_pred = self.current_model(x)
                 loss_value = self.__loss(x, y, y_pred)
-                loss += loss_value.detach().cpu().item() / self.loader.length(type_)
+                loss += loss_value.detach().cpu().item()
 
                 new_score = self.__score(x.cpu().detach(),
                                          y.cpu().detach(),
                                          y_pred.cpu().detach(),
-                                         ) / self.loader.length(type_)
+                                         )
                 score += new_score
                 # print(x[:, -1, ], y[:, -1], y_pred[:, -1])
 
@@ -77,7 +78,7 @@ class TorchTrainer(AbstractTrainer):
                     # loss_value = self.loss(y_pred, y_true)
                     loss_value.backward()
                     self.__optimizer.step()
-        return loss, score
+        return loss / self.loader.length(type_), score / self.loader.length(type_)
 
     def _update_model(self):
         if self.train_params.error < self._best_params.error:
