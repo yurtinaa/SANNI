@@ -20,7 +20,7 @@ from Trainer.TorchTrainer import TorchTrainer, TorchModel
 
 CLASSIFIER_SANNI_CONFIG = TorchNNConfig(
     batch_size=32,
-    epochs=0,
+    epochs=10,
     error_factory=get_error(ErrorType.CE)(),
     score_factory=get_score(ScoreType.F1_SCORE),
     optimizer_type=Adam(lr=0.001,

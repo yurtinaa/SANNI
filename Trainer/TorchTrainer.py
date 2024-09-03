@@ -61,7 +61,7 @@ class TorchTrainer(AbstractTrainer):
             self.__optimizer.zero_grad()
             x = x.to(self.device)
             y = y.to(self.device)
-            print(x.shape)
+            # print(x.shape)
             with torch.set_grad_enabled(type_ == EpochType.TRAIN):
                 y_pred = self.current_model(x)
                 loss_value = self.__loss(x, y, y_pred)
