@@ -1,4 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
+
 from MPDE import MPDETorch
 import torch
 
@@ -49,11 +51,17 @@ class ErrorFactoryMPDE(AbstractErrorFactory):
     windows: int = None
     add_mean: bool = False
     mse: bool = False
+    log: bool = False
+    f1_score: bool = False
+    alpha_beta: List[int] = field(default_factory=lambda: [1, 1])
 
     def __call__(self, frame_type: FrameworkType) -> AbstractError:
         if frame_type == FrameworkType.Torch:
             loss = ErrorMPDETorch(MPDETorch(windows=self.windows,
                                             add_mean=self.add_mean,
+                                            log=self.log,
+                                            alpha_beta=self.alpha_beta,
+                                            f1_score=self.f1_score,
                                             mse=self.mse))
             loss.name = self.name
             return loss
@@ -61,7 +69,7 @@ class ErrorFactoryMPDE(AbstractErrorFactory):
             raise ValueError(f"Unsupported framework type: {frame_type}")
 
     def __repr__(self):
-        return super().__repr__() + f"_windows_{self.windows}_mse_{self.mse}_add_mean_{self.add_mean}"
+        return super().__repr__() + f"_windows_{self.windows}_mse_{self.mse}_add_mean_{self.add_mean}_log_{self.log}_alhpa_{self.alpha_beta}_log_{self.f1_score}"
 
 
 @dataclass
