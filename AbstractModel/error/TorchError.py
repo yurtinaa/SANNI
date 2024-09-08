@@ -69,7 +69,7 @@ class ErrorFactoryMPDE(AbstractErrorFactory):
             raise ValueError(f"Unsupported framework type: {frame_type}")
 
     def __repr__(self):
-        return super().__repr__() + f"_windows_{self.windows}_mse_{self.mse}_add_mean_{self.add_mean}_log_{self.log}_alhpa_{self.alpha_beta}_log_{self.f1_score}"
+        return super().__repr__() + f"_windows_{self.windows}_mse_{self.mse}_add_mean_{self.add_mean}_log_{self.log}_alhpa_{self.alpha_beta}_f1_{self.f1_score}"
 
 
 @dataclass

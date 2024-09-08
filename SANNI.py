@@ -33,9 +33,20 @@ CLASSIFIER_SANNI_CONFIG = TorchNNConfig(
 class SANNI(AbstractImpute):
     __classifier: Classifier = None
     snippet_list: List[List[Tuple[int, np.ndarray]]] = None
+    __snippet_array: np.ndarray = None
     snippet_dict: List[Dict[int, np.ndarray]] = None
+
     __snippet_count: int = None
     classifier_config: NeuralNetworkConfig = field(default_factory=lambda: CLASSIFIER_SANNI_CONFIG)
+
+    def _predictor_construct(self):
+        predictor = Predictor(classifier=self.__classifier,
+                              size_subsequent=self.time_series.window_size,
+                              dim=self.time_series.dim,
+                              snippet_list=self.__snippet_array,
+                              device=torch.device(self.device),
+                              count_snippet=self.__snippet_count).to(self.device)
+        return NotSerialPredictor(predictor)
 
     def __post_init__(self):
         if self.name is None:
@@ -49,19 +60,13 @@ class SANNI(AbstractImpute):
             for snippet in dim.values():
                 dim_data.append(snippet)
             snippet_list.append(dim_data)
-        snippet_list = np.array(snippet_list)
+        self.__snippet_array = np.array(snippet_list)
 
         self.__classifier = Classifier(size_subsequent=self.time_series.window_size,
                                        count_snippet=self.__snippet_count,
                                        dim=self.time_series.dim).to(self.device)
-        predictor = Predictor(classifier=self.__classifier,
-                              size_subsequent=self.time_series.window_size,
-                              dim=self.time_series.dim,
-                              snippet_list=snippet_list,
-                              device=torch.device(self.device),
-                              count_snippet=self.__snippet_count).to(self.device)
-        predictor = NotSerialPredictor(predictor)
-        self.__model = TorchModel(predictor)
+
+        self.__model = TorchModel(self._predictor_construct())
 
         # self.__trainer = TorchTrainer(current_model=self.__model)
 
