@@ -1,13 +1,24 @@
+from dataclasses import dataclass
+
 from torch import nn
 import torch
 from .BaseModel.Predictor import Predictor
 
 
+@dataclass
 class NotSerialPredictor(nn.Module):
     def __init__(self,
                  forward_predictor: Predictor):
         super().__init__()
         self.forward_predictor = forward_predictor
+
+    @property
+    def classifier(self):
+        return self.forward_predictor.classifier
+
+    @classifier.setter
+    def classifier(self, new_classifier: nn.Module):
+        self.forward_predictor.classifier = new_classifier
 
     def forward(self, x: torch.Tensor):
         x = x.clone()

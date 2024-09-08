@@ -31,42 +31,42 @@ CLASSIFIER_SANNI_CONFIG = TorchNNConfig(
 
 @dataclass
 class SANNI(AbstractImpute):
-    __classifier: Classifier = None
+    _classifier: Classifier = None
     snippet_list: List[List[Tuple[int, np.ndarray]]] = None
-    __snippet_array: np.ndarray = None
+    _snippet_array: np.ndarray = None
     snippet_dict: List[Dict[int, np.ndarray]] = None
 
-    __snippet_count: int = None
+    _snippet_count: int = None
     classifier_config: NeuralNetworkConfig = field(default_factory=lambda: CLASSIFIER_SANNI_CONFIG)
 
     def _predictor_construct(self):
-        predictor = Predictor(classifier=self.__classifier,
+        predictor = Predictor(classifier=self._classifier,
                               size_subsequent=self.time_series.window_size,
                               dim=self.time_series.dim,
-                              snippet_list=self.__snippet_array,
+                              snippet_list=self._snippet_array,
                               device=torch.device(self.device),
-                              count_snippet=self.__snippet_count).to(self.device)
+                              count_snippet=self._snippet_count).to(self.device)
         return NotSerialPredictor(predictor)
 
     def __post_init__(self):
         if self.name is None:
             self.name = 'SANNI'
         self.neural_network_config: TorchNNConfig
-        if self.__snippet_count is None:
-            self.__snippet_count = len(self.snippet_dict[0])
+        if self._snippet_count is None:
+            self._snippet_count = len(self.snippet_dict[0])
         snippet_list = []
         for dim in self.snippet_dict:
             dim_data = []
             for snippet in dim.values():
                 dim_data.append(snippet)
             snippet_list.append(dim_data)
-        self.__snippet_array = np.array(snippet_list)
+        self._snippet_array = np.array(snippet_list)
 
-        self.__classifier = Classifier(size_subsequent=self.time_series.window_size,
-                                       count_snippet=self.__snippet_count,
-                                       dim=self.time_series.dim).to(self.device)
+        self._classifier = Classifier(size_subsequent=self.time_series.window_size,
+                                      count_snippet=self._snippet_count,
+                                      dim=self.time_series.dim).to(self.device)
 
-        self.__model = TorchModel(self._predictor_construct())
+        self._model = TorchModel(self._predictor_construct())
 
         # self.__trainer = TorchTrainer(current_model=self.__model)
 
@@ -89,15 +89,15 @@ class SANNI(AbstractImpute):
                                    batch_size=self.classifier_config.batch_size,
                                    shuffle=True)
 
-        classifier = TorchModel(self.__classifier)
+        classifier = TorchModel(self._classifier)
 
         result = TorchTrainer(current_model=classifier,
                               config=self.classifier_config,
                               loader=loader,
                               device=self.device,
                               logger=self.logger).train()
-        history, self.__classifier, _ = result
-        self.__model.model.forward_predictor.classifier = classifier.model
+        history, self._classifier, _ = result
+        self._model.model.classifier = classifier.model
         return history
 
     def _predictor_train(self, X: np.ndarray, Y: np.ndarray):
@@ -108,12 +108,12 @@ class SANNI(AbstractImpute):
                                    dataset_factory=ImputeLastDataset,
                                    batch_size=self.neural_network_config.batch_size,
                                    shuffle=True)
-        result = TorchTrainer(current_model=self.__model,
+        result = TorchTrainer(current_model=self._model,
                               config=self.neural_network_config,
                               loader=loader,
                               device=self.device,
                               logger=self.logger).train()
-        history, self.__model, _ = result
+        history, self._model, _ = result
         return history
 
     def train(self, X: np.ndarray, Y: np.ndarray):
@@ -127,7 +127,7 @@ class SANNI(AbstractImpute):
             X = torch.tensor(X, dtype=torch.float32).to(self.device)
             batch_size = self.classifier_config.batch_size
             if X.shape[0] < batch_size:
-                return self.__model(X).detach().cpu().numpy()
+                return self._model(X).detach().cpu().numpy()
             else:
                 result_arr = []
                 for idx in range(0, X.shape[0],
