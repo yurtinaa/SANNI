@@ -12,6 +12,9 @@ class NotSerialPredictor(nn.Module):
         super().__init__()
         self.forward_predictor = forward_predictor
 
+    def __hash__(self):
+        return hash(id(self))
+
     @property
     def classifier(self):
         return self.forward_predictor.classifier
