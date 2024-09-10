@@ -1,0 +1,20 @@
+{
+    "batch_size": 128,
+    "epochs": 1,
+    "lr": 0.0005,
+    "dataset": "ipython/airq",
+    "windows": 100,
+    "error": {
+        "type": "MPDE",
+        "params": {
+            "windows": 50,
+            "mse": true,
+            "alpha_beta": [1, 2]
+        }
+    },
+    "model": {
+        "name": "SANNI",
+        "device": "cuda:0",
+        "snippet_count": 2
+    }
+}

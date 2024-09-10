@@ -1,6 +1,6 @@
 from torch import nn
 import torch
-from lib.SANNI_v2.Models.Predictors.BaseModel.Predictor import Predictor
+from Models.Predictors.BaseModel.Predictor import Predictor
 from multiprocessing.dummy import Pool as ThreadPool
 
 

@@ -1,41 +1,36 @@
 import logging
-from abc import ABC
-from dataclasses import dataclass, field
-from datetime import datetime
-from enum import Enum
-from typing import Any, Optional
+from dataclasses import field, dataclass
+from pathlib import Path
+from typing import Optional, Any
 
 from Logger.AbstractLogger import AbstractLogger, LogLevel
 
 
 @dataclass
-class ConsoleLogger(AbstractLogger, object):
+class FileLogger(AbstractLogger):
     _instance = None  # Класс-атрибут для хранения единственного экземпляра
 
     level: LogLevel = LogLevel.INFO  # Уровень логирования по умолчанию
-    __logger: logging.Logger = field(default_factory=lambda: logging.getLogger('ConsoleLogger'))
+    __logger: logging.Logger = field(default_factory=lambda: logging.getLogger('FileLogger'))
+    log_file: Path = Path('application.log')  # Путь к файлу лога по умолчанию
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls, *args, **kwargs)
-        return cls._instance
-
-    def configure(self, level: LogLevel = LogLevel.INFO):
-        """Настройка уровня логирования."""
+    def configure(self, level: LogLevel = LogLevel.INFO,
+                  log_file: Path = Path('application.log')):
+        """Настройка уровня логирования и файла."""
+        self.log_file = log_file
         self.__configure_logger(level)
         return self
 
     def __configure_logger(self, level: LogLevel):
         """Настраивает логгер и его обработчики."""
         # Очистка существующих обработчиков
-        for handler in logging.getLogger().handlers[:]:
-            logging.getLogger().removeHandler(handler)
-        self.__logger.handlers.clear()
+        for handler in self.__logger.handlers[:]:
+            self.__logger.removeHandler(handler)
 
-        self.__logger.setLevel(self.level.to_logging_level())
+        self.__logger.setLevel(level.to_logging_level())
 
-        # Создание обработчика для вывода в консоль
-        handler = logging.StreamHandler()
+        # Создание обработчика для записи в файл
+        handler = logging.FileHandler(self.log_file)
         handler.setLevel(level.to_logging_level())
 
         # Форматирование сообщений
@@ -48,8 +43,7 @@ class ConsoleLogger(AbstractLogger, object):
         # Добавление обработчика к логгеру
         self.__logger.addHandler(handler)
 
-    def log(self, log_data: dict,
-            level: Optional[LogLevel] = None):
+    def log(self, log_data: dict, level: Optional[LogLevel] = None):
         if level is None:
             level = self.level
 

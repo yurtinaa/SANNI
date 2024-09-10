@@ -8,6 +8,7 @@ import torch
 from AbstractModel.FrameParam import FrameworkType
 from AbstractModel.Parametrs import TimeSeriesConfig, NeuralNetworkConfig
 from Logger.AbstractLogger import AbstractLogger
+from Logger.ConsoleLogger import ConsoleLogger
 from Trainer.AbstractTrainer import AbstractTrainer, AbstractModel
 
 
