@@ -7,14 +7,14 @@ import torch
 import numpy as np
 import random
 from datetime import datetime
-from .Models import Predictor, Classifier, SAETI
-from .Models.Predictors.BaseModel.ShortPredictor import ShortPredictor
-from .Models.Predictors.ANNI.Predictor import ANPredictor
-from .Models.Predictors.SerialPredictor import SerialPredictor
-from .Models.Predictors.NotSerial import NotSerialPredictor
-from .Preprocess import get_snippets, get_not_nan_indices
-from .DataRead import ClassifierDataset, PredictorDataset
-from .Utils import Trainer, classifier_score, check_model_classifier
+from Models import Predictor, Classifier, SAETI
+from Models.Predictors.BaseModel.ShortPredictor import ShortPredictor
+from Models.Predictors.ANNI.Predictor import ANPredictor
+from Models.Predictors.SerialPredictor import SerialPredictor
+from Models.Predictors.NotSerial import NotSerialPredictor
+from Preprocess import get_snippets, get_not_nan_indices
+from DataRead import ClassifierDataset, PredictorDataset
+from Utils import Trainer, classifier_score, check_model_classifier
 
 
 

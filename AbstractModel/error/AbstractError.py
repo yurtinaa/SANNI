@@ -8,10 +8,10 @@ from AbstractModel.FrameParam import FrameworkType
 
 
 class ErrorType(str, Enum):
-    MSE = "mean_squared_error"
-    MAE = "mean_absolute_error"
+    MSE = "MSE"
+    MAE = "MAE"
     CE = "cross_entropy"
-    MPDE = "mean_profile_distante_error"
+    MPDE = "MPDE"
 
 
 class AbstractError(ABC):
