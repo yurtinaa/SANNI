@@ -144,9 +144,28 @@ def load_config(filename: str) -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start training with a given config file.")
     parser.add_argument('--dataset', type=str, help="Path to the JSON configuration file.")
+    parser.add_argument('--model', type=str, help="Path to the JSON configuration file.")
     args = parser.parse_args()
     config = {
-        "batch_size": 128,
+        "batch_size": 256,
+        "epochs": 500,
+        "lr": 0.0005,
+        "dataset": f"datasets/{args.dataset}",
+        "windows": 100,
+        "error": {
+            "type": "MSE",
+            "params": {
+            }
+        },
+        "model": {
+            "name": f"{args.model}",
+            "device": "cuda:0",
+            "snippet_count": 2
+        }
+    }
+    start_train(config)
+    config = {
+        "batch_size": 256,
         "epochs": 500,
         "lr": 0.0005,
         "dataset": f"datasets/{args.dataset}",
@@ -160,14 +179,15 @@ if __name__ == "__main__":
             }
         },
         "model": {
-            "name": "SANNI",
+            "name": f"{args.model}",
             "device": "cuda:0",
             "snippet_count": 2
         }
     }
-    for alpha in [0.25, 0.5, 0.75]:
-        for beta in [0.25, 0.5, 0.75, 0]:
+    for alpha in [0.25, 0.5, 0.75, 1]:
+        for beta in [0.25, 0.5, 0.75, 0, 1]:
             if alpha == beta:
                 continue
             config['error']['params']['alpha_beta'] = [alpha, beta]
             start_train(config)
+
