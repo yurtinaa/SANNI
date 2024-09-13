@@ -97,7 +97,8 @@ class TorchImputeError(BaseErrorTorch):
         index_origin = Y != Y
 
         index[index_origin] = False
-        return self.loss(Y[index], Y_pred[index])
+        # print(torch.sum(~index))
+        return self.loss(Y[~index], Y_pred[~index])
 
 
 class ErrorMPDETorch(BaseErrorTorch):

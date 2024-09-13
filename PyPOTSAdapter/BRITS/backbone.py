@@ -5,7 +5,7 @@
 # Created by Wenjie Du <wenjay.du@gmail.com>
 # License: BSD-3-Clause
 
-from typing import Tuple
+from typing import Tuple, Dict
 
 import numpy as np
 import torch
@@ -94,7 +94,7 @@ class BackboneRITS(nn.Module):
 
     def forward(
             self, inputs: dict, direction: str
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
         """
         Parameters
         ----------
@@ -149,19 +149,19 @@ class BackboneRITS(nn.Module):
             hidden_states = hidden_states * gamma_h  # decay hidden states
             x_h = self.hist_reg(hidden_states)
             XH[:, t, :] = x_h
-            reconstruction_loss += calc_mae(x_h, x, m)
+            # reconstruction_loss += calc_mae(x_h, x, m)
 
             x_c = m * x + (1 - m) * x_h
 
             z_h = self.feat_reg(x_c)
             ZH[:, t, :] = z_h
-            reconstruction_loss += calc_mae(z_h, x, m)
+            # reconstruction_loss += calc_mae(z_h, x, m)
 
             alpha = torch.sigmoid(self.combining_weight(torch.cat([gamma_x, m], dim=1)))
 
             c_h = alpha * z_h + (1 - alpha) * x_h
 
-            reconstruction_loss += calc_mae(c_h, x, m)
+            # reconstruction_loss += calc_mae(c_h, x, m)
             CH[:, t, :] = c_h
 
             c_c = m * x + (1 - m) * c_h
@@ -175,21 +175,34 @@ class BackboneRITS(nn.Module):
         # for each iteration, reconstruction_loss increases its value for 3 times
         X_nan = X.clone()
         # print(missing_mask)
-        X_nan[missing_mask.long()] = np.nan
+        X_nan[torch.abs(1 - missing_mask).long()] = np.nan
         reconstruction_loss = torch.tensor(0.0).to(device)
         reconstruction_loss += calc_mae(XH, X, missing_mask)
-        reconstruction_loss += calc_mae(CH,X, missing_mask)
+        # print(torch.sum(missing_mask))
+        # print(reconstruction_loss)
+        reconstruction_loss += calc_mae(CH, X, missing_mask)
         reconstruction_loss += calc_mae(ZH, X, missing_mask)
         reconstruction_loss /= 3
+        # loss_reconstruction_loss = torch.tensor(0.0).to(device)
+
+        # loss_reconstruction_loss += self.loss_function(X_nan, XH, X_nan)
+        # print(loss_reconstruction_loss)
+        # loss_reconstruction_loss += self.loss_function(X_nan, ZH, X_nan)
+        # loss_reconstruction_loss += self.loss_function(X_nan, CH, X_nan)
+        # loss_reconstruction_loss /= 3
         # reconstruction_loss = self.loss_function(X, XH, X)
         # reconstruction_loss += self.loss_function(X, ZH, X)
         # reconstruction_loss += self.loss_function(X, CH, X)
         # reconstruction_loss /= self.n_steps * 3
-
+        H_dict = {
+            "XH": XH,
+            "CH": CH,
+            "ZH": ZH
+        }
         reconstruction = torch.cat(estimations, dim=1)
         imputed_data = missing_mask * X + (1 - missing_mask) * reconstruction
 
-        return imputed_data, reconstruction, hidden_states, reconstruction_loss
+        return imputed_data, reconstruction, hidden_states, reconstruction_loss, H_dict
 
 
 class BackboneBRITS(nn.Module):
@@ -280,25 +293,34 @@ class BackboneBRITS(nn.Module):
             f_reconstruction,
             f_hidden_states,
             f_reconstruction_loss,
+            fh_dict
         ) = self.rits_f(inputs, "forward")
         # Results from the backward RITS.
+        backward_result = self.rits_b(inputs, "backward")
         (
             b_imputed_data,
             b_reconstruction,
             b_hidden_states,
-            b_reconstruction_loss,
-        ) = self._reverse(self.rits_b(inputs, "backward"))
-
+            b_reconstruction_loss
+        ) = self._reverse(tuple(list(backward_result)[:-1]))
+        bh_dict = list(backward_result)[-1]
+        h_dict = {
+            'forward': fh_dict,
+            'backward': bh_dict
+        }
         imputed_data = (f_imputed_data + b_imputed_data) / 2
         consistency_loss = self._get_consistency_loss(f_imputed_data, b_imputed_data)
         reconstruction_loss = f_reconstruction_loss + b_reconstruction_loss
-
+        # print('f', f_reconstruction_loss, 'b', b_reconstruction_loss)
         return (
             imputed_data,
+            f_imputed_data,
+            b_imputed_data,
             f_reconstruction,
             b_reconstruction,
             f_hidden_states,
             b_hidden_states,
             consistency_loss,
             reconstruction_loss,
+            h_dict,
         )

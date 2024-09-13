@@ -1,9 +1,72 @@
 import torch
 import torch.nn as nn
+from pypots.utils.metrics import calc_mae
 
-from AbstractModel.error.TorchError import TorchImputeError
+from AbstractModel.error.AbstractError import AbstractError
+from AbstractModel.error.TorchError import TorchImputeError, BaseErrorTorch
 from Trainer.AbstractTrainer import AbstractModel
 from .backbone import BackboneBRITS
+import torch
+
+
+def calculate_mae(predictions, targets):
+    """
+    Вычисляет среднее абсолютное отклонение (MAE) между предсказаниями и целевыми значениями.
+
+    :param predictions: Тензор с предсказаниями.
+    :param targets: Тензор с истинными значениями.
+    :return: Среднее абсолютное отклонение (MAE).
+    """
+    absolute_errors = torch.abs(predictions - targets)
+    mae = absolute_errors.mean()
+    return mae
+
+
+def reverse_tensor(tensor_):
+    if tensor_.dim() <= 1:
+        return tensor_
+    indices = range(tensor_.size()[1])[::-1]
+    indices = torch.tensor(
+        indices, dtype=torch.long, device=tensor_.device, requires_grad=False
+    )
+    return tensor_.index_select(1, indices)
+
+
+class BritsTorchError(BaseErrorTorch):
+    def _get_consistency_loss(self, pred_f: torch.Tensor, pred_b: torch.Tensor) -> torch.Tensor:
+        loss = self.loss(pred_f, pred_b).mean() * 1e-1
+        return loss
+
+    def __call__(self, X, Y, Y_pred):
+        missing_mask = X['forward']["missing_mask"].bool()
+
+        X = X['forward']["X"]
+        h_dict = Y_pred['h_dict']
+        forward_loss = torch.tensor(0.0).to(Y.device)
+        loss_forward_loss = torch.tensor(0.0).to(Y.device)
+        for key, predict in h_dict['forward'].items():
+            index = X != X
+            index_origin = Y != Y
+
+            index[index_origin] = False
+            # forward_loss += calc_mae(predict, Y, missing_mask)
+            # print(Y[missing_mask.bool()].shape)
+            forward_loss += self.loss(Y[missing_mask], predict[missing_mask]).mean()
+        backward_loss = torch.tensor(0.0).to(Y.device)
+        for key, predict in h_dict['backward'].items():
+            predict_reverse = reverse_tensor(predict)
+            index = X != X
+            index_origin = Y != Y
+
+            index[index_origin] = False
+            backward_loss += calc_mae(predict_reverse, Y, missing_mask)
+
+            # backward_loss += self.loss(Y[missing_mask], predict_reverse[missing_mask]).mean()
+        reconstruction_loss = (forward_loss + backward_loss) / 3
+        consistency_loss = self._get_consistency_loss(Y_pred['f_imputed_data'],
+                                                      Y_pred['b_imputed_data'])
+        # print('f_my', forward_loss / 3, 'b_my', backward_loss / 3)
+        return consistency_loss + reconstruction_loss
 
 
 class _BRITS(nn.Module):
@@ -24,10 +87,10 @@ class _BRITS(nn.Module):
     """
 
     def __init__(
-        self,
-        n_steps: int,
-        n_features: int,
-        rnn_hidden_size: int,
+            self,
+            n_steps: int,
+            n_features: int,
+            rnn_hidden_size: int,
     ):
         super().__init__()
         self.n_steps = n_steps
@@ -38,26 +101,33 @@ class _BRITS(nn.Module):
     def forward(self, inputs: dict, training: bool = True) -> dict:
         (
             imputed_data,
+            f_imputed_data,
+            b_imputed_data,
             f_reconstruction,
             b_reconstruction,
             f_hidden_states,
             b_hidden_states,
             consistency_loss,
             reconstruction_loss,
+            h_dict
         ) = self.model(inputs)
 
         results = {
             "imputed_data": imputed_data,
+            "f_imputed_data": f_imputed_data,
+            "b_imputed_data": b_imputed_data,
+            "h_dict": h_dict,
         }
-
+        loss_function = BritsTorchError(nn.L1Loss())
+        my_loss = loss_function(inputs, inputs['forward']["X"], results)
         # if in training mode, return results with losses
         if training:
             results["consistency_loss"] = consistency_loss
             results["reconstruction_loss"] = reconstruction_loss
             loss = consistency_loss + reconstruction_loss
-
+            # print(loss)
             # `loss` is always the item for backward propagating to update the model
-            results["loss"] = loss
+            results["loss"] = my_loss
             results["reconstruction"] = (f_reconstruction + b_reconstruction) / 2
             results["f_reconstruction"] = f_reconstruction
             results["b_reconstruction"] = b_reconstruction
