@@ -6,7 +6,7 @@ from start_experent import start_train
 
 base_config = {
     "batch_size": 256,
-    "epochs": 1,
+    "epochs": 500,
     "lr": 0.0005,
     "dataset": "",
     "windows": 100,
