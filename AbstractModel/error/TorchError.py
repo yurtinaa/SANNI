@@ -75,6 +75,7 @@ class ErrorFactoryMPDE(AbstractErrorFactory):
 @dataclass
 class BaseErrorTorch(AbstractError):
     loss: torch.nn.Module
+    index: bool = True
     __name: str = 'loss'
 
     @property
@@ -93,12 +94,15 @@ class BaseErrorTorch(AbstractError):
 class TorchImputeError(BaseErrorTorch):
 
     def __call__(self, X, Y, Y_pred):
-        index = X != X
         index_origin = Y != Y
+        if self.index:
+            index = X != X
+            index[index_origin] = False
+        else:
+            index = index_origin
+            index = ~index
 
-        index[index_origin] = False
-        # print(torch.sum(~index))
-        return self.loss(Y[~index], Y_pred[~index])
+        return self.loss(Y[index], Y_pred[index])
 
 
 class ErrorMPDETorch(BaseErrorTorch):

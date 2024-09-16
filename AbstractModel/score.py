@@ -122,6 +122,7 @@ class F1Score(AbstractError):
 
 class MSEScore(AbstractError):
     __name = 'MSE'
+    index=False
 
     def __call__(self, X, Y, Y_pred):
         # if len(Y.shape) > 2:
@@ -131,6 +132,9 @@ class MSEScore(AbstractError):
         #                                       y_true=Y[:, i]))
         #     return np.mean(mse)
         index = X != X
+        index_origin = Y != Y
+
+        index[index_origin] = False
         return mean_squared_error(y_pred=Y_pred[index], y_true=Y[index])
 
 
@@ -146,8 +150,8 @@ class ScoreType(str, Enum):
 def to_numpy(tensor) -> np.ndarray:
     if isinstance(tensor, torch.Tensor):
         if tensor.is_cuda:
-            return tensor.cpu().numpy()
-        return tensor.numpy()
+            return tensor.cpu().detach().numpy()
+        return tensor.detach().numpy()
     return np.array(tensor)
 
 

@@ -254,6 +254,7 @@ class BRITS(BaseNNImputer):
         imputation = torch.cat(imputation_collector).cpu().detach().numpy()
         result_dict = {
             "imputation": imputation,
+
         }
         return result_dict
 

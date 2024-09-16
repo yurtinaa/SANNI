@@ -39,7 +39,7 @@ class ImputeLastDataset(BaseDataset):
 
 @dataclass
 class TorchTensorLoader(DataLoader):
-    __set_dict: Dict[EpochType, Tuple[torch.Tensor, torch.Tensor]] = field(default_factory=dict)
+    _set_dict: Dict[EpochType, Tuple[torch.Tensor, torch.Tensor]] = field(default_factory=dict)
     dataset_factory: Type[BaseDataset] = BaseDataset
 
     def __post_init__(self):
@@ -51,21 +51,26 @@ class TorchTensorLoader(DataLoader):
                                                             shuffle=self.shuffle,
                                                             test_size=self.percent,
                                                             random_state=self.seed)
-        print(X_train.dtype, y_test.dtype)
-        self.__set_dict[EpochType.TRAIN] = X_train, y_train
-        self.__set_dict[EpochType.EVAL] = X_test, y_test
+        # print(X_train.dtype, y_test.dtype)
+        self._set_dict[EpochType.TRAIN] = X_train, y_train
+        self._set_dict[EpochType.EVAL] = X_test, y_test
 
     def length(self, epoch_type: EpochType) -> float:
-        return self.__set_dict[epoch_type][0].shape[0] // self.batch_size
+        # print(self._set_dict[epoch_type][0].shape[0], self.batch_size)
+        length = self._set_dict[epoch_type][0].shape[0] // self.batch_size
+        if length == 0:
+            return 1
+        else:
+            return length
 
     def __iter__(self, epoch_type: EpochType):
-        dataset = self.dataset_factory(*self.__set_dict[epoch_type])
+        dataset = self.dataset_factory(*self._set_dict[epoch_type])
         return TorchDataLoader(dataset,
                                batch_size=self.batch_size,
                                shuffle=self.shuffle)
 
     def __call__(self, epoch_type: EpochType):
-        dataset = self.dataset_factory(*self.__set_dict[epoch_type])
+        dataset = self.dataset_factory(*self._set_dict[epoch_type])
         return TorchDataLoader(dataset,
                                batch_size=self.batch_size,
                                shuffle=self.shuffle)

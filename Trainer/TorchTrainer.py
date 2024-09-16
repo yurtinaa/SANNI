@@ -67,9 +67,9 @@ class TorchTrainer(AbstractTrainer):
                 loss_value = self.__loss(x, y, y_pred)
                 loss += loss_value.detach().cpu().item()
 
-                new_score = self.__score(x.cpu().detach(),
-                                         y.cpu().detach(),
-                                         y_pred.cpu().detach(),
+                new_score = self.__score(x,
+                                         y,
+                                         y_pred,
                                          )
                 score += new_score
                 # print(x[:, -1, ], y[:, -1], y_pred[:, -1])
