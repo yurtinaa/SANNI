@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List
 
+from AbstractModel.error.TorchErrorFunction.BaseError import ErrorFactoryMSE, ErrorFactoryMAE, BaseErrorTorch
+from AbstractModel.error.TorchErrorFunction.LogCoshLoss import ErrorFactoryLogCosh
 from MPDE import MPDETorch
 import torch
 
@@ -20,28 +22,8 @@ class ErrorFactoryCrossEntropy(AbstractErrorFactory):
             raise ValueError(f"Unsupported framework type: {frame_type}")
 
 
-class ErrorFactoryMSE(AbstractErrorFactory):
-    name = 'MSE'
-
-    def __call__(self, frame_type: FrameworkType):
-        if frame_type == FrameworkType.Torch:
-            loss = TorchImputeError(torch.nn.MSELoss())
-            loss.name = self.name
-            return loss
-        else:
-            raise ValueError(f"Unsupported framework type: {frame_type}")
 
 
-class ErrorFactoryMAE(AbstractErrorFactory):
-    name = 'MAE'
-
-    def __call__(self, frame_type: FrameworkType):
-        if frame_type == FrameworkType.Torch:
-            loss = TorchImputeError(torch.nn.L1Loss())
-            loss.name = self.name
-            return loss
-        else:
-            raise ValueError(f"Unsupported framework type: {frame_type}")
 
 
 @dataclass
@@ -72,39 +54,6 @@ class ErrorFactoryMPDE(AbstractErrorFactory):
         return super().__repr__() + f"_windows_{self.windows}_mse_{self.mse}_add_mean_{self.add_mean}_log_{self.log}_alhpa_{self.alpha_beta}_f1_{self.f1_score}"
 
 
-@dataclass
-class BaseErrorTorch(AbstractError):
-    loss: torch.nn.Module
-    index: bool = True
-    __name: str = 'loss'
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, new_name):
-        self.__name = new_name
-
-    def __call__(self, X, Y, Y_pred):
-        return self.loss(Y_pred, Y)
-
-
-@dataclass
-class TorchImputeError(BaseErrorTorch):
-
-    def __call__(self, X, Y, Y_pred):
-        index_origin = Y != Y
-        if self.index:
-            index = X != X
-            index[index_origin] = False
-        else:
-            index = index_origin
-            index = ~index
-
-        return self.loss(Y[index], Y_pred[index])
-
-
 class ErrorMPDETorch(BaseErrorTorch):
 
     def __call__(self, X, Y, Y_pred):
@@ -120,6 +69,7 @@ _error_classes = {
     ErrorType.MAE: ErrorFactoryMAE,
     ErrorType.CE: ErrorFactoryCrossEntropy,
     ErrorType.MPDE: ErrorFactoryMPDE,
+    ErrorType.LogCosh: ErrorFactoryLogCosh
 }
 
 

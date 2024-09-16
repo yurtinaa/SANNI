@@ -12,7 +12,8 @@ import torch
 import torch.nn as nn
 from pypots.utils.metrics import calc_mae
 
-from AbstractModel.error.TorchError import TorchImputeError
+from AbstractModel.error.TorchErrorFunction.BaseError import TorchImputeError
+# from AbstractModel.error.TorchError import TorchImputeError
 from .layers import FeatureRegression
 
 from pypots.nn.modules.grud.layers import TemporalDecay

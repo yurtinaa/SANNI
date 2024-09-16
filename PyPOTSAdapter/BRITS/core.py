@@ -4,7 +4,7 @@ from pygrinder import fill_and_get_mask_torch
 from pypots.utils.metrics import calc_mae
 
 from AbstractModel.error.AbstractError import AbstractError
-from AbstractModel.error.TorchError import TorchImputeError, BaseErrorTorch
+from AbstractModel.error.TorchErrorFunction.BaseError import BaseErrorTorch
 from Trainer.AbstractTrainer import AbstractModel
 from .backbone import BackboneBRITS
 import torch

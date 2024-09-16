@@ -4,7 +4,7 @@ import numpy as np
 
 from AbstractModel.FrameParam import FrameworkType
 from AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
-from AbstractModel.error.TorchError import BaseErrorTorch
+from AbstractModel.error.TorchErrorFunction.BaseError import BaseErrorTorch
 from AbstractModel.score import Score
 from Models.Predictors.SAETI.model import SAETI as BaseSAETI
 import torch
@@ -67,7 +67,7 @@ class SAETI(SANNI):
         super().__post_init__()
         # print('drop new error')
         error_factory = ErrorFactorySAETI(self.neural_network_config.error_factory)
-        score_factory = ScoreSAETI(name='brits_score',
+        score_factory = ScoreSAETI(name='SAETI_score',
                                    score=self.neural_network_config.score_factory)
 
         self.neural_network_config.error_factory = error_factory
