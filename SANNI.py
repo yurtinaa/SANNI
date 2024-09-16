@@ -100,12 +100,18 @@ class SANNI(AbstractImpute):
         self._model.model.classifier = classifier.model
         return history
 
+    @property
+    def _dataset_factory(self):
+        return ImputeLastDataset
+
+
     def _predictor_train(self, X: np.ndarray, Y: np.ndarray):
         X = torch.tensor(X, dtype=torch.float32)
         y = torch.tensor(Y, dtype=torch.float32)
+        # dataset_factory = self.dataset_factory
         loader = TorchTensorLoader(X=X,
                                    y=y,
-                                   dataset_factory=ImputeLastDataset,
+                                   dataset_factory=self._dataset_factory,
                                    batch_size=self.neural_network_config.batch_size,
                                    shuffle=True)
         result = TorchTrainer(current_model=self._model,

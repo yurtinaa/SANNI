@@ -32,8 +32,37 @@ class ImputeLastDataset(BaseDataset):
         return len(self.X)
 
     def __getitem__(self, idx):
-        X = self.X[idx]
+        X = self.X[idx].clone()
         X[-1, :] = np.nan
+        return X, self.y[idx]
+
+
+@dataclass
+class ImputeRandomDataset(BaseDataset):
+    X: torch.Tensor
+    y: torch.Tensor
+    percent: float = 0.25
+    predict: bool = False
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, idx):
+        X = self.X[idx].clone()
+        num_elements = X.numel()  # Общее количество элементов в X
+        num_nan = int(num_elements * self.percent)  # Количество элементов, которые нужно заменить на NaN
+
+        # Выберите случайные индексы для замены на NaN
+        nan_indices = np.random.choice(num_elements, num_nan, replace=False)
+
+        # Преобразуйте 1D индексы в индексы в тензоре
+        row_indices, col_indices = np.unravel_index(nan_indices, X.shape)
+
+        # Замените выбранные элементы на NaN
+        X[row_indices, col_indices] = float('nan')
+        if self.predict:
+            X[-1, :] = np.nan
+
         return X, self.y[idx]
 
 
