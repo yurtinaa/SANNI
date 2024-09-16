@@ -14,6 +14,7 @@ class ErrorType(str, Enum):
     MPDE = "MPDE"
     LogCosh = "LogCosh"
     QuantileLoss = "quantile"
+    DTW = "DTW"
 
 
 class AbstractError(ABC):

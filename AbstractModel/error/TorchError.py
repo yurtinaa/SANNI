@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from AbstractModel.error.TorchErrorFunction.BaseError import ErrorFactoryMSE, ErrorFactoryMAE, BaseErrorTorch
+from AbstractModel.error.TorchErrorFunction.BaseError import ErrorFactoryMSE, ErrorFactoryMAE, BaseErrorTorch, \
+    ErrorFullTorch
+from AbstractModel.error.TorchErrorFunction.DTWLoss.DTWError import ErrorFactoryDTWLoss
 from AbstractModel.error.TorchErrorFunction.LogCoshLoss import ErrorFactoryLogCosh
 from AbstractModel.error.TorchErrorFunction.QuantileLoss import ErrorFactoryQuantile
 from MPDE import MPDETorch
@@ -40,7 +42,7 @@ class ErrorFactoryMPDE(AbstractErrorFactory):
 
     def __call__(self, frame_type: FrameworkType) -> AbstractError:
         if frame_type == FrameworkType.Torch:
-            loss = ErrorMPDETorch(MPDETorch(windows=self.windows,
+            loss = ErrorFullTorch(MPDETorch(windows=self.windows,
                                             add_mean=self.add_mean,
                                             log=self.log,
                                             alpha_beta=self.alpha_beta,
@@ -55,14 +57,8 @@ class ErrorFactoryMPDE(AbstractErrorFactory):
         return super().__repr__() + f"_windows_{self.windows}_mse_{self.mse}_add_mean_{self.add_mean}_log_{self.log}_alhpa_{self.alpha_beta}_f1_{self.f1_score}"
 
 
-class ErrorMPDETorch(BaseErrorTorch):
-
-    def __call__(self, X, Y, Y_pred):
-        return self.loss(Y_pred, Y).mean()
-
-
-class MSEErrorFactory:
-    pass
+# class MSEErrorFactory:
+#     pass
 
 
 _error_classes = {
@@ -71,7 +67,8 @@ _error_classes = {
     ErrorType.CE: ErrorFactoryCrossEntropy,
     ErrorType.MPDE: ErrorFactoryMPDE,
     ErrorType.LogCosh: ErrorFactoryLogCosh,
-    ErrorType.QuantileLoss: ErrorFactoryQuantile
+    ErrorType.QuantileLoss: ErrorFactoryQuantile,
+    ErrorType.DTW: ErrorFactoryDTWLoss
 }
 
 

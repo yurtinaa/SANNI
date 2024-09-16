@@ -39,12 +39,14 @@ class TorchImputeError(BaseErrorTorch):
         return self.loss(Y[index], Y_pred[index])
 
 class ErrorFactoryBase(AbstractErrorFactory):
-    def __init__(self, loss_fn):
+    def __init__(self, loss_fn,
+                 impute_type=TorchImputeError):
         self.loss_fn = loss_fn
+        self.impute_type = impute_type
 
     def __call__(self, frame_type: FrameworkType):
         if frame_type == FrameworkType.Torch:
-            loss = TorchImputeError(self.loss_fn)
+            loss = self.impute_type(self.loss_fn)
             loss.name = self.name
             return loss
         else:
@@ -59,3 +61,9 @@ class ErrorFactoryMAE(ErrorFactoryBase):
     def __init__(self):
         super().__init__(torch.nn.L1Loss())
         self.name = 'MAE'
+
+
+class ErrorFullTorch(BaseErrorTorch):
+
+    def __call__(self, X, Y, Y_pred):
+        return self.loss(Y_pred, Y).mean()
