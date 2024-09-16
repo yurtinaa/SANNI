@@ -173,9 +173,9 @@ class BackboneRITS(nn.Module):
             )
 
         # for each iteration, reconstruction_loss increases its value for 3 times
-        X_nan = X.clone()
+        # X_nan = X.clone()
         # print(missing_mask)
-        X_nan[torch.abs(1 - missing_mask).long()] = np.nan
+        # X_nan[torch.abs(1 - missing_mask).long()] = np.nan
         # reconstruction_loss = torch.tensor(0.0).to(device)
         # reconstruction_loss += calc_mae(XH, X, missing_mask)
         # # print(torch.sum(missing_mask))
