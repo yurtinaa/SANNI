@@ -13,6 +13,7 @@ class ErrorType(str, Enum):
     CE = "cross_entropy"
     MPDE = "MPDE"
     LogCosh = "LogCosh"
+    QuantileLoss = "quantile"
 
 
 class AbstractError(ABC):

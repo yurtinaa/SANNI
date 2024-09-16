@@ -3,6 +3,7 @@ from typing import List
 
 from AbstractModel.error.TorchErrorFunction.BaseError import ErrorFactoryMSE, ErrorFactoryMAE, BaseErrorTorch
 from AbstractModel.error.TorchErrorFunction.LogCoshLoss import ErrorFactoryLogCosh
+from AbstractModel.error.TorchErrorFunction.QuantileLoss import ErrorFactoryQuantile
 from MPDE import MPDETorch
 import torch
 
@@ -69,7 +70,8 @@ _error_classes = {
     ErrorType.MAE: ErrorFactoryMAE,
     ErrorType.CE: ErrorFactoryCrossEntropy,
     ErrorType.MPDE: ErrorFactoryMPDE,
-    ErrorType.LogCosh: ErrorFactoryLogCosh
+    ErrorType.LogCosh: ErrorFactoryLogCosh,
+    ErrorType.QuantileLoss: ErrorFactoryQuantile
 }
 
 

@@ -15,5 +15,5 @@ class LogCoshLoss(nn.Module):
 
 class ErrorFactoryLogCosh(ErrorFactoryBase):
     def __init__(self):
-        super().__init__(torch.nn.L1Loss())
+        super().__init__(LogCoshLoss())
         self.name = 'LogCosh'
