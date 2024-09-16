@@ -17,6 +17,9 @@ class ErrorType(str, Enum):
     DTW = "DTW"
 
 
+base_error_list = [ErrorType.MSE, ErrorType.MAE, ErrorType.LogCosh, ErrorType.QuantileLoss]
+
+
 class AbstractError(ABC):
     __name: str
 

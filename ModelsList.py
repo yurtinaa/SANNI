@@ -1,6 +1,7 @@
 from enum import Enum
 
 from AbstractModel.AbstractImpute import AbstractImpute
+from PyPOTSAdapter.BRITS.BRITS import BRITSImpute
 from SAETI import SAETI
 from SANNI import SANNI
 
@@ -8,11 +9,14 @@ from SANNI import SANNI
 class ModelType(str, Enum):
     SANNI = "SANNI"
     SAETI = "SAETI"
+    BRITS = "BRITS"
+
 
 
 _model_dict = {
     ModelType.SANNI: SANNI,
-    ModelType.SAETI: SAETI
+    ModelType.SAETI: SAETI,
+    ModelType.BRITS: BRITSImpute
 }
 
 

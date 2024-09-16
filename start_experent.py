@@ -4,7 +4,7 @@ import string
 import random
 import traceback
 from pathlib import Path
-
+import time
 import numpy as np
 import requests
 from dotenv import load_dotenv
@@ -113,6 +113,8 @@ def start_train(config):
         telegram_send("Error preprocess: \n" + config_as_str +
                       '\n' + str(full_traceback))
         raise
+    start_time = time.time()
+
     try:
         history = model.train(drop_nan_sub, drop_nan_sub)
     except BaseException as e:
@@ -122,6 +124,8 @@ def start_train(config):
         telegram_send("Error train: \n" + config_as_str +
                       '\n' + str(full_traceback))
         raise
+    train_end_time = time.time()
+
     data_result = SerialImputeBehavior(model, window_size).simulate(data_normalize)
     result_mse = get_score(ScoreType.MSE)(dataset_blackout,
                                           data_result,
@@ -129,9 +133,19 @@ def start_train(config):
 
     np.savetxt(save_dir / 'result_impute.txt',
                normalizer.re_normalize(data_result))
+    end_time = time.time()
+    train_time = end_time - start_time
+    impute_time = train_end_time - end_time
+    # В секундах
+    train_time = time.strftime('%H:%M:%S', time.gmtime(train_time))
+    impute_time = time.strftime('%H:%M:%S', time.gmtime(impute_time))
+
     json.dump(result_mse.to_dict(), open(save_dir / 'score_result.json', 'w+'), indent=2)
     json.dump(history, open(save_dir / 'history.json', 'w+'), indent=2)
     json.dump(config, open(save_dir / 'config.json', 'w+'), indent=2)
+    json.dump({"trian_time": train_time,
+               "impute_time": impute_time}, open(save_dir / 'time.json', 'w+'), indent=2)
+
     telegram_send("Start \n" + config_as_str + f"\n{result_mse}")
 
 
@@ -190,4 +204,3 @@ if __name__ == "__main__":
                 continue
             config['error']['params']['alpha_beta'] = [alpha, beta]
             start_train(config)
-
