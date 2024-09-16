@@ -26,9 +26,10 @@ class TorchModel(AbstractModel):
         return copy.deepcopy(self.model)
 
     def __call__(self, X):
-        if not isinstance(X, torch.Tensor):
-            raise ValueError("New model in TorchModel"
-                             " must be an instance of torch.nn.Module")
+        #Fixme потом вернуть
+        # if not isinstance(X, torch.Tensor):
+        #     raise ValueError("New model in TorchModel"
+        #                      " must be an instance of torch.nn.Module")
         if X.device != self.model.device:
             X = X.to(self.model.device)
         return self.model(X)
