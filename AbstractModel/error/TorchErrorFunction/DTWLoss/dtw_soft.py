@@ -1,6 +1,6 @@
 # third-party library
 import torch
-
+from typing import Tuple
 
 def soft_min(list_a, gamma):
     """Softmin function.
@@ -28,7 +28,7 @@ def soft_min(list_a, gamma):
 
 def soft_dtw(
     x: torch.Tensor, y: torch.Tensor, gamma: float = 1.0
-) -> tuple[torch.Tensor, torch.Tensor]:
+) -> Tuple[torch.Tensor, torch.Tensor]:
     """Soft Dynamic Time Warping.
 
     Args:
