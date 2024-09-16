@@ -6,7 +6,11 @@ from .Encoder import TimeEncoder
 
 # fixme сделать базовый и вот этот одним
 class SAETI(nn.Module):
-    def __init__(self, size_seq, n_features, latent_dim, hidden_size, classifier, snippet_list, init=0):
+    def __init__(self, size_seq: int,
+                 n_features: int,
+                 latent_dim: int,
+                 hidden_size: int,
+                 classifier: nn.Module, snippet_list: torch.tensor, init=0):
         super().__init__()
         self.classifier = classifier
         self.snippet_list = snippet_list
@@ -26,7 +30,7 @@ class SAETI(nn.Module):
         for batch_number in torch.arange(0, end=snippet.shape[0], device=snippet.device):
             for ids in torch.arange(0, end=self.n_features, device=snippet.device):
                 result[batch_number, ids, :] = self.snippet_list[ids,
-                                                                 snippet[batch_number, ids]]
+                snippet[batch_number, ids]]
         return result
 
     def __add_snippet(self, x):

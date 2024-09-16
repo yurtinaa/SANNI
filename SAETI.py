@@ -13,9 +13,9 @@ class SAETI(SANNI):
                               n_features=self.time_series.dim,
                               hidden_size=self.time_series.window_size,
                               latent_dim=self.time_series.window_size // 2,
-                              classifier=self.__classifier,
-                              snippet_list=self.__snippet_array)
-        return predictor
+                              classifier=self._classifier,
+                              snippet_list=torch.tensor(self._snippet_array).to(self.device))
+        return predictor.to(self.device)
 
     def __post_init__(self):
         if self.name is None:
