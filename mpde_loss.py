@@ -14,6 +14,10 @@ if __name__ == "__main__":
                         type=float,
                         default=0.0005,  # Устанавливаем стандартное значение
                         help="Learning rate (default: 0.001)")
+    parser.add_argument('--cuda',
+                        type=int,
+                        default=0,  # Устанавливаем стандартное значение
+                        help="Learning rate (default: 0.001)")
     args = parser.parse_args()
 
     dataset_list = ['airq',
@@ -37,6 +41,7 @@ if __name__ == "__main__":
                              model_name=model_name)
         config['epochs'] = 1
         config['lr'] = args.lr
+        config['model']['device'] = f"cuda:{args.cuda}"
         try:
             start_train(config)
         except Exception as e:
