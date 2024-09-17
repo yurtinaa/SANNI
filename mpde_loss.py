@@ -39,7 +39,7 @@ if __name__ == "__main__":
         config = init_config(dataset,
                              error_name="MPDE",
                              model_name=model_name)
-        config['epochs'] = 1
+        # config['epochs'] = 1
         config['lr'] = args.lr
         config['model']['device'] = f"cuda:{args.cuda}"
         try:
