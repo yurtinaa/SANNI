@@ -51,7 +51,6 @@ class BRITSImpute(AbstractImpute):
     def __post_init__(self):
         if self.name is None:
             self.name = 'BRITS'
-        print(self.device)
         self.__model = TorchModel(_BRITS(
             n_steps=self.time_series.window_size,
             n_features=self.time_series.dim,

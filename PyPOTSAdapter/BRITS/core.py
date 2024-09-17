@@ -42,10 +42,10 @@ class BritsTorchError(BaseErrorTorch):
         missing_mask = X['forward']["missing_mask"].bool()
         forward_Y, _ = fill_and_get_mask_torch(Y)
         X = X['forward']["X"]
-        index_mask = missing_mask.bool()
+        # index_mask = missing_mask.bool()
         h_dict = Y_pred['h_dict']
         forward_loss = torch.tensor(0.0).to(Y.device)
-        loss_forward_loss = torch.tensor(0.0).to(Y.device)
+        # loss_forward_loss = torch.tensor(0.0).to(Y.device)
         for key, predict in h_dict['forward'].items():
             index = X != X
             index_origin = Y != Y

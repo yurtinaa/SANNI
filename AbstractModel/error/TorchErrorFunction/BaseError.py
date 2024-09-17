@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Type
 
 import torch
 
@@ -23,6 +24,20 @@ class BaseErrorTorch(AbstractError):
     def __call__(self, X, Y, Y_pred):
         return self.loss(Y_pred, Y)
 
+
+@dataclass
+class ErrorFactoryWrapper(AbstractErrorFactory):
+    name: str
+    inside_error: AbstractErrorFactory
+    wrapper_error: Type[BaseErrorTorch]
+
+    def __call__(self, frame_type: FrameworkType) -> AbstractError:
+        error = self.inside_error(frame_type)
+        error.index = False
+        wrapped_error = self.wrapper_error(error)
+        wrapped_error.name = self.inside_error.name  # Передаем имя
+
+        return wrapped_error
 
 @dataclass
 class TorchImputeError(BaseErrorTorch):

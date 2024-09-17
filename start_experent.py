@@ -3,6 +3,7 @@ import json
 import string
 import random
 import traceback
+from dataclasses import dataclass
 from pathlib import Path
 import time
 import numpy as np
@@ -10,7 +11,9 @@ import requests
 from dotenv import load_dotenv
 import os
 
+from AbstractModel.FrameParam import FrameworkType
 from AbstractModel.Parametrs import TimeSeriesConfig, TorchNNConfig
+from AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
 from AbstractModel.error.TorchError import get_error
 from AbstractModel.optimizer.abstract_optimizer import Adam
 from AbstractModel.score import get_score, ScoreType
@@ -29,6 +32,7 @@ load_dotenv()
 # Читаем переменные
 TOKEN_BOT = os.getenv("TOKEN_BOT")
 CHAT_ID_TOKEN = os.getenv("CHAT_ID_TOKEN")
+
 
 
 def token_generate():
