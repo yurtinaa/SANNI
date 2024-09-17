@@ -47,6 +47,10 @@ def init_model(model_name):
 def init_error(error_name):
     error = error_config.copy()
     error['type'] = error_name
+    if error_name == 'MPDE':
+        error['params'] = {"windows": 50,
+                           "mse": True,
+                           "alpha_beta": [0.25, 0.75]}
     return error
 
 
