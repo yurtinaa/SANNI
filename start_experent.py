@@ -4,6 +4,7 @@ import string
 import random
 import traceback
 from dataclasses import dataclass
+from os import times_result
 from pathlib import Path
 import time
 import numpy as np
@@ -34,7 +35,6 @@ TOKEN_BOT = os.getenv("TOKEN_BOT")
 CHAT_ID_TOKEN = os.getenv("CHAT_ID_TOKEN")
 
 
-
 def token_generate():
     random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
     return random_string
@@ -52,6 +52,17 @@ def telegram_send(*args, **kwargs):
 
 
 def start_train(config):
+    result_dict = train(config)
+    save_dir = result_dict['save_dir']
+    json.dump(result_dict['score_result'], open(save_dir / 'score_result.json', 'w+'), indent=2)
+    json.dump(result_dict['history'], open(save_dir / 'history.json', 'w+'), indent=2)
+    json.dump(config, open(save_dir / 'config.json', 'w+'), indent=2)
+    json.dump(result_dict['time_result'], open(save_dir / 'time.json', 'w+'), indent=2)
+    np.savetxt(save_dir / 'result_impute.txt',
+               result_dict['result_impute'])
+
+
+def train(config):
     try:
         dataset_name = config.get("dataset")
 
@@ -135,22 +146,31 @@ def start_train(config):
                                           data_result,
                                           dataset_origin_norm)
 
-    np.savetxt(save_dir / 'result_impute.txt',
-               normalizer.re_normalize(data_result))
     end_time = time.time()
     train_time = end_time - start_time
     impute_time = train_end_time - end_time
     # В секундах
     train_time = time.strftime('%H:%M:%S', time.gmtime(train_time))
     impute_time = time.strftime('%H:%M:%S', time.gmtime(impute_time))
-
-    json.dump(result_mse.to_dict(), open(save_dir / 'score_result.json', 'w+'), indent=2)
-    json.dump(history, open(save_dir / 'history.json', 'w+'), indent=2)
-    json.dump(config, open(save_dir / 'config.json', 'w+'), indent=2)
-    json.dump({"trian_time": train_time,
-               "impute_time": impute_time}, open(save_dir / 'time.json', 'w+'), indent=2)
-
     telegram_send("Start \n" + config_as_str + f"\n{result_mse}")
+    return {
+        'score_result': result_mse.to_dict(),
+        'result_impute.txt': normalizer.re_normalize(data_result).tolist(),
+        'dict_history': history.to_dict(),
+        'save_dir': save_dir,
+        'time_result': {"trian_time": train_time,
+                        "impute_time": impute_time}
+    }
+
+    # np.savetxt(save_dir / 'result_impute.txt',
+    #            normalizer.re_normalize(data_result))
+    # json.dump(result_mse.to_dict(), open(save_dir / 'score_result.json', 'w+'), indent=2)
+    # json.dump(history, open(save_dir / 'history.json', 'w+'), indent=2)
+    # json.dump(config, open(save_dir / 'config.json', 'w+'), indent=2)
+    # json.dump({"trian_time": train_time,
+    #            "impute_time": impute_time}, open(save_dir / 'time.json', 'w+'), indent=2)
+    #
+    #
 
 
 def load_config(filename: str) -> dict:
