@@ -3,7 +3,7 @@ from dataclasses import field, dataclass
 from pathlib import Path
 from typing import Optional, Any
 
-from Logger.AbstractLogger import AbstractLogger, LogLevel
+from .AbstractLogger import AbstractLogger, LogLevel
 
 
 @dataclass

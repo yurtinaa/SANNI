@@ -5,11 +5,11 @@ from enum import Enum
 import numpy as np
 import torch
 
-from AbstractModel.FrameParam import FrameworkType
-from AbstractModel.Parametrs import TimeSeriesConfig, NeuralNetworkConfig
-from Logger.AbstractLogger import AbstractLogger
-from Logger.ConsoleLogger import ConsoleLogger
-from Trainer.AbstractTrainer import AbstractTrainer, AbstractModel
+# from AbstractModel.FrameParam import FrameworkType
+from .Parametrs import TimeSeriesConfig, NeuralNetworkConfig
+from ..Logger.AbstractLogger import AbstractLogger
+# from Logger.ConsoleLogger import ConsoleLogger
+from ..Trainer.AbstractTrainer import AbstractTrainer, AbstractModel
 
 
 @dataclass

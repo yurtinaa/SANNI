@@ -2,15 +2,15 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from AbstractModel.FrameParam import FrameworkType
-from AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
-from AbstractModel.error.TorchErrorFunction.BaseError import BaseErrorTorch
-from AbstractModel.score import Score
-from Models.Predictors.SAETI.model import SAETI as BaseSAETI
+from .AbstractModel.FrameParam import FrameworkType
+from .AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
+from .AbstractModel.error.TorchErrorFunction.BaseError import BaseErrorTorch
+from .AbstractModel.score import Score
+from .Models.Predictors.SAETI.model import SAETI as BaseSAETI
 import torch
 
-from SANNI import SANNI
-from Trainer.Loader.TorchLoader import ImputeRandomDataset, ImputeLastDataset
+from .SANNI import SANNI
+from .Trainer.Loader.TorchLoader import ImputeRandomDataset, ImputeLastDataset
 
 
 class SAETITorchError(BaseErrorTorch):

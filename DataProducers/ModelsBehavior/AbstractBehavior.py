@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from AbstractModel import AbstractImpute
+from ...AbstractModel import AbstractImpute
 import numpy as np
 from attr import dataclass
 

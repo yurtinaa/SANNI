@@ -1,16 +1,16 @@
 import copy
 from dataclasses import dataclass
-from typing import Any
+# from typing import Any
 
 import torch
-from overrides import override
-from torch import nn
+# from overrides import override
+# from torch import nn
 
-from AbstractModel.error.AbstractError import AbstractError
-from AbstractModel.score import Score, ScoreResult
-from Logger.AbstractLogger import LogKeys
-from Trainer.AbstractTrainer import AbstractTrainer, AbstractModel
-from EnumConfig import EpochType
+from ..AbstractModel.error.AbstractError import AbstractError
+from ..AbstractModel.score import Score, ScoreResult
+from ..Logger.AbstractLogger import LogKeys
+from .AbstractTrainer import AbstractTrainer, AbstractModel
+from ..EnumConfig import EpochType
 
 
 @dataclass

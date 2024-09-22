@@ -7,8 +7,8 @@ from torch.utils.data.dataset import Dataset
 import torch
 from sklearn.model_selection import train_test_split
 
-from EnumConfig import EpochType
-from Trainer.Loader.AbstractLoader import DataLoader
+from ...EnumConfig import EpochType
+from .AbstractLoader import DataLoader
 
 
 @dataclass

@@ -4,13 +4,13 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
-from AbstractModel.AbstractImpute import AbstractImpute, AbstractClassifier
-from AbstractModel.FrameParam import FrameworkType
-from AbstractModel.TorchImpute import TorchModel
-from AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
-from AbstractModel.score import Score
-from Trainer.AbstractTrainer import AbstractModel
-from Trainer.TorchTrainer import TorchTrainer
+from ...AbstractModel.AbstractImpute import AbstractImpute, AbstractClassifier
+from ...AbstractModel.FrameParam import FrameworkType
+from ...AbstractModel.TorchImpute import TorchModel
+from ...AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
+from ...AbstractModel.score import Score
+# from Trainer.AbstractTrainer import AbstractModel
+from ...Trainer.TorchTrainer import TorchTrainer
 from .BRITSDataLoader import BRITSLoader, BRITSDataset, brits_collate_fn
 from .core import _BRITS, BritsTorchError
 

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from AbstractModel.error.TorchErrorFunction.BaseError import ErrorFactoryBase
+from ..TorchErrorFunction.BaseError import ErrorFactoryBase
 
 
 class LogCoshLoss(nn.Module):

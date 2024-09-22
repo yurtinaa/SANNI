@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 import torch
 from torch import nn
 
-from Trainer.AbstractTrainer import AbstractModel
+from ..Trainer.AbstractTrainer import AbstractModel
 
 
 @dataclass

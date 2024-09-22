@@ -1,10 +1,10 @@
 from enum import Enum
 
-from AbstractModel.AbstractImpute import AbstractImpute
-from PyPOTSAdapter.BRITS.BRITS import BRITSImpute
-from PyPOTSAdapter.SAITS.SAITS import SAITSImpute
-from SAETI import SAETI
-from SANNI import SANNI
+from .AbstractModel.AbstractImpute import AbstractImpute
+from .PyPOTSAdapter.BRITS.BRITS import BRITSImpute
+from .PyPOTSAdapter.SAITS.SAITS import SAITSImpute
+from .SAETI import SAETI
+from .SANNI import SANNI
 
 
 class ModelType(str, Enum):

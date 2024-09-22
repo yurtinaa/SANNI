@@ -8,7 +8,7 @@ from typing import Any, Union
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-from Trainer.AbstractTrainer import EpochType
+from ..AbstractTrainer import EpochType
 
 
 @dataclass

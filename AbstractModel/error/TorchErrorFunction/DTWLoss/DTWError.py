@@ -1,8 +1,8 @@
 from torch import nn
 
-from AbstractModel.error.TorchErrorFunction.BaseError import ErrorFactoryBase, ErrorFullTorch
-from AbstractModel.error.TorchErrorFunction.DTWLoss.DTWLoss import DTWLoss
-from AbstractModel.error.TorchErrorFunction.DTWLoss.DTWLoss_CUDA import DTWLoss as DTWLossCuda
+from ...TorchErrorFunction.BaseError import ErrorFactoryBase, ErrorFullTorch
+from ...TorchErrorFunction.DTWLoss.DTWLoss import DTWLoss
+from ...TorchErrorFunction.DTWLoss.DTWLoss_CUDA import DTWLoss as DTWLossCuda
 
 
 class DTWLossWrapper(nn.Module):

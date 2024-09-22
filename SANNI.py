@@ -6,17 +6,17 @@ import numpy as np
 import torch
 from torch import nn
 
-from AbstractModel.AbstractImpute import AbstractImpute, AbstractClassifier
-from AbstractModel.Parametrs import NeuralNetworkConfig, TorchNNConfig
-from AbstractModel.error.AbstractError import ErrorType
-from AbstractModel.error.TorchError import get_error
-from AbstractModel.optimizer.abstract_optimizer import Adam
-from AbstractModel.score import ScoreType, get_score
-from Models import Classifier, Predictor
-from Models.Predictors.NotSerial import NotSerialPredictor
-from Trainer.AbstractTrainer import AbstractModel
-from Trainer.Loader.TorchLoader import TorchTensorLoader, ImputeLastDataset
-from Trainer.TorchTrainer import TorchTrainer, TorchModel
+from .AbstractModel.AbstractImpute import AbstractImpute, AbstractClassifier
+from .AbstractModel.Parametrs import NeuralNetworkConfig, TorchNNConfig
+from .AbstractModel.error.AbstractError import ErrorType
+from .AbstractModel.error.TorchError import get_error
+from .AbstractModel.optimizer.abstract_optimizer import Adam
+from .AbstractModel.score import ScoreType, get_score
+from .Models import Classifier, Predictor
+from .Models.Predictors.NotSerial import NotSerialPredictor
+# from Trainer.AbstractTrainer import AbstractModel
+from .Trainer.Loader.TorchLoader import TorchTensorLoader, ImputeLastDataset
+from .Trainer.TorchTrainer import TorchTrainer, TorchModel
 
 CLASSIFIER_SANNI_CONFIG = TorchNNConfig(
     batch_size=32,

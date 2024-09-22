@@ -1,5 +1,5 @@
 import torch
-from AbstractModel.error.TorchErrorFunction.DTWLoss.dtw_soft import (
+from .dtw_soft import (
 
     soft_dtw_batch_same_size,
     backward_recursion_batch_same_size,

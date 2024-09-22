@@ -3,8 +3,8 @@ from typing import Type
 
 import torch
 
-from AbstractModel.FrameParam import FrameworkType
-from AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
+from ...FrameParam import FrameworkType
+from ..AbstractError import AbstractErrorFactory, AbstractError
 
 
 @dataclass

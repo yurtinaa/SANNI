@@ -5,11 +5,11 @@ from importlib.abc import Loader
 
 import numpy as np
 
-from AbstractModel.Parametrs import NeuralNetworkConfig
-from EnumConfig import EpochType
+from ..AbstractModel.Parametrs import NeuralNetworkConfig
+from ..EnumConfig import EpochType
 # from AbstractModel.AbstractLogger import AbstractLogger
-from Trainer.Loader import AbstractLoader
-from Logger.AbstractLogger import AbstractLogger
+from .Loader import AbstractLoader
+from ..Logger.AbstractLogger import AbstractLogger
 
 
 @dataclass

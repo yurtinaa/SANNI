@@ -1,8 +1,9 @@
 {
     "batch_size": 128,
     "epochs": 1,
+    "token":"qwecxzsadaq",
     "lr": 0.0005,
-    "dataset": "ipython/airq",
+    "dataset": "SANNI/datasets/airq",
     "windows": 100,
     "error": {
         "type": "MPDE",

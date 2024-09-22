@@ -12,20 +12,20 @@ import requests
 from dotenv import load_dotenv
 import os
 
-from AbstractModel.FrameParam import FrameworkType
-from AbstractModel.Parametrs import TimeSeriesConfig, TorchNNConfig
-from AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
-from AbstractModel.error.TorchError import get_error
-from AbstractModel.optimizer.abstract_optimizer import Adam
-from AbstractModel.score import get_score, ScoreType
-from DataAnalyze.DataAnnotation import SnippetAnnotation
-from DataProducers.Convertors import SliceTimeSeriesConvertor, DropMissingSubConvertor
-from DataProducers.ImputeScenario import BlackoutScenario
-from DataProducers.ModelsBehavior.AbstractBehavior import SerialImputeBehavior
-from DataProducers.Normalizers import MinMaxNormalizer
-from Logger.ConsoleLogger import ConsoleLogger
-from Logger.FileLogger import FileLogger
-from ModelsList import get_model
+# from .AbstractModel.FrameParam import FrameworkType
+from .AbstractModel.Parametrs import TimeSeriesConfig, TorchNNConfig
+# from .AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
+from .AbstractModel.error.TorchError import get_error
+from .AbstractModel.optimizer.abstract_optimizer import Adam
+from .AbstractModel.score import get_score, ScoreType
+from .DataAnalyze.DataAnnotation import SnippetAnnotation
+from .DataProducers.Convertors import SliceTimeSeriesConvertor, DropMissingSubConvertor
+from .DataProducers.ImputeScenario import BlackoutScenario
+from .DataProducers.ModelsBehavior.AbstractBehavior import SerialImputeBehavior
+from .DataProducers.Normalizers import MinMaxNormalizer
+# from Logger.ConsoleLogger import ConsoleLogger
+from .Logger.FileLogger import FileLogger
+from .ModelsList import get_model
 
 # Загружаем переменные из файла .env
 load_dotenv()

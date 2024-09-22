@@ -4,7 +4,7 @@ from enum import Enum
 
 import torch
 
-from AbstractModel.FrameParam import FrameworkType
+from ..FrameParam import FrameworkType
 
 
 class SchedulerType(str, Enum):

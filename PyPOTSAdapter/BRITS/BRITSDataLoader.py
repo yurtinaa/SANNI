@@ -12,8 +12,8 @@ from pygrinder import fill_and_get_mask_torch
 from pypots.data.utils import _parse_delta_torch
 from sklearn.model_selection import train_test_split
 
-from EnumConfig import EpochType
-from Trainer.Loader.TorchLoader import TorchTensorLoader, BaseDataset
+from ...EnumConfig import EpochType
+from ...Trainer.Loader.TorchLoader import TorchTensorLoader, BaseDataset
 from torch.utils.data import DataLoader as TorchDataLoader
 
 

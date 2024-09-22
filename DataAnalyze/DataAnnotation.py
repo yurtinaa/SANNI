@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 
-from Preprocess import get_snippets
+from ..Preprocess import get_snippets
 
 
 @dataclass

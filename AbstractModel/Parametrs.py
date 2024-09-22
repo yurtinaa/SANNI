@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from AbstractModel.FrameParam import FrameworkType
-from AbstractModel.error.AbstractError import AbstractErrorFactory, AbstractError
-from AbstractModel.optimizer.abstract_scheduler import AbstractScheduler
-from AbstractModel.score import Score
-from AbstractModel.optimizer.abstract_optimizer import AbstractOptimizer
-from LossFunction import MPDELoss
+from .FrameParam import FrameworkType
+from .error.AbstractError import AbstractErrorFactory, AbstractError
+from .optimizer.abstract_scheduler import AbstractScheduler
+from .score import Score
+from .optimizer.abstract_optimizer import AbstractOptimizer
+# from LossFunction import MPDELoss
 from abc import ABC, abstractmethod
 
 import torch

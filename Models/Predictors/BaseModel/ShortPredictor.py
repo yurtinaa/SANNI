@@ -1,7 +1,7 @@
 from .Predictor import Predictor
 from torch import nn
 import torch
-from Models.Classifier import Classifier
+from ...Classifier import Classifier
 
 
 class ShortPredictor(Predictor):

@@ -1,16 +1,16 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from AbstractModel.error.TorchErrorFunction.BaseError import ErrorFactoryMSE, ErrorFactoryMAE, BaseErrorTorch, \
+from .TorchErrorFunction.BaseError import ErrorFactoryMSE, ErrorFactoryMAE, BaseErrorTorch, \
     ErrorFullTorch
-from AbstractModel.error.TorchErrorFunction.DTWLoss.DTWError import ErrorFactoryDTWLoss
-from AbstractModel.error.TorchErrorFunction.LogCoshLoss import ErrorFactoryLogCosh
-from AbstractModel.error.TorchErrorFunction.QuantileLoss import ErrorFactoryQuantile
-from MPDE import MPDETorch
+from .TorchErrorFunction.DTWLoss.DTWError import ErrorFactoryDTWLoss
+from .TorchErrorFunction.LogCoshLoss import ErrorFactoryLogCosh
+from .TorchErrorFunction.QuantileLoss import ErrorFactoryQuantile
+from ...MPDE import MPDETorch
 import torch
 
-from AbstractModel.FrameParam import FrameworkType
-from AbstractModel.error.AbstractError import ErrorType, AbstractError, AbstractErrorFactory
+from ..FrameParam import FrameworkType
+from .AbstractError import ErrorType, AbstractError, AbstractErrorFactory
 
 
 class ErrorFactoryCrossEntropy(AbstractErrorFactory):
