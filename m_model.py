@@ -1,9 +1,10 @@
-recovery[None,i-window+1:i+1]# from lib.SANNI.Models.Predictors.NoPoint import NoPoint
+# recovery[None,i-window+1:i+1]# from lib.SANNI.Models.Predictors.NoPoint import NoPoint
 # from .Utils.testing_methods import classifier_score
 from .model import *
 from .Models.Predictors.Multivariate.Base import BaseMultivarite
 
 
+# zxczxc
 # fixme: добавить обработку исключени:
 # 1. Остановки по кнопке
 # 2. Остановки из за большой выборки.
