@@ -2,7 +2,6 @@ import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Pool
 import multiprocessing
-multiprocessing.set_start_method('spawn')
 
 
 def calculate_distance(data, snippet_new, mask, i_idx, len_data):

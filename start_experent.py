@@ -155,9 +155,9 @@ def train(config):
     telegram_send("Start \n" + config_as_str + f"\n{result_mse}")
     return {
         'score_result': result_mse.to_dict(),
-        'result_impute.txt': normalizer.re_normalize(data_result).tolist(),
-        'dict_history': history.to_dict(),
-        'save_dir': save_dir,
+        'result_impute': normalizer.re_normalize(data_result).tolist(),
+        'dict_history': history,
+        'save_dir': str(save_dir),
         'time_result': {"trian_time": train_time,
                         "impute_time": impute_time}
     }
