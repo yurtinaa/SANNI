@@ -10,7 +10,7 @@ from sklearn.metrics import mean_squared_error
 import numpy as np
 from sympy import true
 
-from MPDE.libs.native.MPDETorch import MPDETorch
+from ..MPDE import MPDETorch
 from .error.AbstractError import AbstractError, ErrorType
 
 MEAN_DICT = lambda data_dict: np.mean(list(data_dict.values()))
