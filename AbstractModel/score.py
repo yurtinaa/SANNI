@@ -10,6 +10,7 @@ from sklearn.metrics import mean_squared_error
 import numpy as np
 from sympy import true
 
+from MPDE.libs.native.MPDETorch import MPDETorch
 from .error.AbstractError import AbstractError, ErrorType
 
 MEAN_DICT = lambda data_dict: np.mean(list(data_dict.values()))
@@ -122,7 +123,7 @@ class F1Score(AbstractError):
 
 class MSEScore(AbstractError):
     __name = 'MSE'
-    index=False
+    index = False
 
     def __call__(self, X, Y, Y_pred):
         # if len(Y.shape) > 2:
@@ -136,6 +137,31 @@ class MSEScore(AbstractError):
 
         index[index_origin] = False
         return mean_squared_error(y_pred=Y_pred[index], y_true=Y[index])
+
+
+@dataclass
+class MPDEScore(AbstractError):
+    __name = 'MPDE'
+    windows: int = None
+    add_mean: bool = False
+    mse: bool = False
+    log: bool = False
+    f1_score: bool = False
+    alpha_beta: List[int] = field(default_factory=lambda: [1, 1])
+
+    def __post_init__(self):
+        self.__loss = MPDETorch(windows=self.windows,
+                                add_mean=self.add_mean,
+                                log=self.log,
+                                alpha_beta=self.alpha_beta,
+                                f1_score=self.f1_score,
+                                mse=self.mse)
+
+    def __call__(self, X, Y, Y_pred):
+        with torch.no_grad():
+            Y = torch.tensor(Y)
+            Y_pred = torch.tensor(Y_pred)
+            return self.__loss(Y_pred, Y).mean().numpy()[0]
 
 
 class ScoreType(str, Enum):
