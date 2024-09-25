@@ -161,7 +161,7 @@ class MPDEScore(AbstractError):
         with torch.no_grad():
             Y = torch.tensor(Y)
             Y_pred = torch.tensor(Y_pred)
-            return self.__loss(Y_pred, Y).mean().numpy()[0]
+            return self.__loss(Y_pred, Y).mean().numpy().tolist()
 
 
 class ScoreType(str, Enum):
