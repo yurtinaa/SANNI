@@ -22,7 +22,7 @@ from .DataAnalyze.DataAnnotation import SnippetAnnotation
 from .DataProducers.Convertors import SliceTimeSeriesConvertor, DropMissingSubConvertor
 from .DataProducers.ImputeScenario import BlackoutScenario
 from .DataProducers.ModelsBehavior.AbstractBehavior import SerialImputeBehavior
-from .DataProducers.Normalizers import MinMaxNormalizer
+from .DataProducers.Normalizers import MinMaxNormalizer, StandardNormalizer
 # from Logger.ConsoleLogger import ConsoleLogger
 from .Logger.FileLogger import FileLogger
 from .ModelsList import get_model
@@ -68,7 +68,7 @@ def train(config):
 
         dataset_origin = np.loadtxt(f'{config.get("dataset")}.txt')
         dataset_blackout = BlackoutScenario().convert(dataset_origin)
-        normalizer = MinMaxNormalizer()
+        normalizer = StandardNormalizer()
         data_normalize = normalizer.fit(dataset_blackout)
         window_size = config.get('windows', 100)
         dataset_slice = SliceTimeSeriesConvertor(window_size).convert(data_normalize)
