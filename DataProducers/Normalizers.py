@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from dataclasses import dataclass
 
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
 @dataclass
@@ -24,7 +24,7 @@ class Normalizer(ABC):
 @dataclass
 class MinMaxNormalizer(Normalizer):
     feature_range: tuple = (0, 1)
-    scaler: MinMaxScaler = None
+    scaler = None
 
     def fit(self, X: np.ndarray) -> np.ndarray:
         self.scaler = MinMaxScaler(feature_range=self.feature_range)
@@ -40,3 +40,10 @@ class MinMaxNormalizer(Normalizer):
         if self.scaler is None:
             raise ValueError("The normalizer has not been fitted yet. Call 'fit' first.")
         return self.scaler.inverse_transform(X)
+
+
+
+@dataclass
+class StandardNormalizer(MinMaxNormalizer):
+    def fit(self, X: np.ndarray) -> np.ndarray:
+        self.scaler = StandardScaler()
