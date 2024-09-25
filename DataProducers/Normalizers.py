@@ -47,3 +47,5 @@ class MinMaxNormalizer(Normalizer):
 class StandardNormalizer(MinMaxNormalizer):
     def fit(self, X: np.ndarray) -> np.ndarray:
         self.scaler = StandardScaler()
+        self.scaler.fit(X)
+        return self.scaler.transform(X)
