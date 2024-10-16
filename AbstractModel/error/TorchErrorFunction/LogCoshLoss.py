@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+from torchmetrics.regression import LogCoshError
 from ..TorchErrorFunction.BaseError import ErrorFactoryBase
 
 
@@ -15,5 +15,5 @@ class LogCoshLoss(nn.Module):
 
 class ErrorFactoryLogCosh(ErrorFactoryBase):
     def __init__(self):
-        super().__init__(LogCoshLoss())
+        super().__init__(LogCoshError())
         self.name = 'LogCosh'
