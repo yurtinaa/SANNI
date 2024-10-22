@@ -13,6 +13,9 @@ class BaseErrorTorch(AbstractError):
     index: bool = True
     __name: str = 'loss'
 
+    def to(self, device):
+        self.loss = self.loss.to(device)
+        return self
     @property
     def name(self):
         return self.__name
@@ -39,6 +42,7 @@ class ErrorFactoryWrapper(AbstractErrorFactory):
 
         return wrapped_error
 
+
 @dataclass
 class TorchImputeError(BaseErrorTorch):
 
@@ -52,6 +56,7 @@ class TorchImputeError(BaseErrorTorch):
             index = ~index
 
         return self.loss(Y[index], Y_pred[index])
+
 
 class ErrorFactoryBase(AbstractErrorFactory):
     def __init__(self, loss_fn,
@@ -67,10 +72,12 @@ class ErrorFactoryBase(AbstractErrorFactory):
         else:
             raise ValueError(f"Unsupported framework type: {frame_type}")
 
+
 class ErrorFactoryMSE(ErrorFactoryBase):
     def __init__(self):
         super().__init__(torch.nn.MSELoss())
         self.name = 'MSE'
+
 
 class ErrorFactoryMAE(ErrorFactoryBase):
     def __init__(self):

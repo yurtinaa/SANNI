@@ -68,6 +68,7 @@ _error_classes = {
     ErrorType.MPDE: ErrorFactoryMPDE,
     ErrorType.LogCosh: ErrorFactoryLogCosh,
     ErrorType.QuantileLoss: ErrorFactoryQuantile,
+
     ErrorType.DTW: ErrorFactoryDTWLoss
 }
 

@@ -51,6 +51,7 @@ class TorchTrainer(AbstractTrainer):
         self.__optimizer = self.config.optimizer(self.current_model.model.parameters())
         # self.__device = self.current_model.model.device
         self.__loss = self.config.error
+        self.__loss = self.__loss.to(self.device)
         self.__score = self.config.score
 
     def _one_epoch(self, type_: EpochType):
