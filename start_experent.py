@@ -18,7 +18,7 @@ from .AbstractModel.Parametrs import TimeSeriesConfig, TorchNNConfig
 from .AbstractModel.error.TorchError import get_error
 from .AbstractModel.optimizer.abstract_optimizer import Adam
 from .AbstractModel.score import get_score, ScoreType
-from .DataAnalyze.DataAnnotation import SnippetAnnotation
+# from .DataAnalyze.DataAnnotation import SnippetAnnotation
 from .DataProducers.Convertors import SliceTimeSeriesConvertor, DropMissingSubConvertor
 from .DataProducers.ImputeScenario import BlackoutScenario
 from .DataProducers.ModelsBehavior.AbstractBehavior import SerialImputeBehavior
