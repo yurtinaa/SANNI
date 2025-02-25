@@ -15,6 +15,8 @@ from ..AbstractTrainer import EpochType
 class DataLoader(ABC):
     X: Union[torch.Tensor, np.ndarray]
     y: Union[torch.Tensor, np.ndarray]
+    X_val: Union[torch.Tensor, np.ndarray] = None
+    y_val: Union[torch.Tensor, np.ndarray] = None
     batch_size: int = 64
     percent: float = 0.25
     shuffle: bool = True

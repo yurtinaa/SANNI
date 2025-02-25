@@ -71,15 +71,20 @@ class TorchTensorLoader(DataLoader):
     _set_dict: Dict[EpochType, Tuple[torch.Tensor, torch.Tensor]] = field(default_factory=dict)
     dataset_factory: Type[BaseDataset] = BaseDataset
 
-    def __post_init__(self):
-        # self.X = torch.tensor(self.X, dtype=torch.float32)
-        # self.y = torch.tensor(self.y, dtype=torch.float32)
 
-        X_train, X_test, y_train, y_test = train_test_split(self.X,
+    def __post_init__(self):
+        self.X = torch.tensor(self.X, dtype=torch.float32)
+        self.y = torch.tensor(self.y, dtype=torch.float32)
+        if self.X_val is None or self.y_val is None:
+            X_train, X_test, y_train, y_test = train_test_split(self.X,
                                                             self.y,
                                                             shuffle=self.shuffle,
                                                             test_size=self.percent,
                                                             random_state=self.seed)
+        else:
+            X_train, y_train = self.X, self.y
+            X_test = torch.tensor(self.X_val, dtype=torch.float32)
+            y_test = torch.tensor(self.y_val, dtype=torch.float32)
         # print(X_train.dtype, y_test.dtype)
         self._set_dict[EpochType.TRAIN] = X_train, y_train
         self._set_dict[EpochType.EVAL] = X_test, y_test

@@ -1,5 +1,7 @@
 import copy
 from dataclasses import dataclass
+from time import time
+
 # from typing import Any
 
 import torch
@@ -15,7 +17,7 @@ from ..EnumConfig import EpochType
 
 @dataclass
 class TorchModel(AbstractModel):
-    __model: torch.nn.Module
+    _model: torch.nn.Module
 
     def train(self):
         self.model.train()
@@ -25,20 +27,20 @@ class TorchModel(AbstractModel):
 
     @property
     def model(self):
-        return self.__model
+        return self._model
 
     @model.setter
     def model(self, new_model):
         print(type(new_model))
         if not isinstance(new_model, TorchModel):
             raise ValueError("new_model must be an instance of TorchModel")
-        self.__model = copy.deepcopy(new_model.__model)
+        self._model = copy.deepcopy(new_model._model)
 
     def copy(self):
         return copy.deepcopy(self)
 
     def __call__(self, X):
-        return self.__model(X)
+        return self._model(X)
 
 
 class TorchTrainer(AbstractTrainer):
@@ -95,20 +97,38 @@ class TorchTrainer(AbstractTrainer):
                    "val": []}
         for self.train_params.epoch in range(self.config.epochs):
             self.current_model.train()
+            start_time = time()
             train_loss, train_score = self._one_epoch(type_=EpochType.TRAIN)
+            train_time = time() - start_time
+
             self.current_model.eval()
+            start_time = time()
             val_loss, val_score = self._one_epoch(type_=EpochType.EVAL)
+            eval_time = time() - start_time
+
             self.train_params.error = val_loss
             self._log_data({
                 LogKeys.EPOCH: self.train_params.epoch,
-                EpochType.TRAIN: {self.__loss.name: train_loss,
-                                  self.__score.name: train_score},
-                EpochType.EVAL: {self.__loss.name: val_loss,
-                                 self.__score.name: val_score},
+                EpochType.TRAIN: {'loss': train_loss,
+                                  'score': train_score.to_dict(),
+                                  'time': train_time},
+                EpochType.EVAL: {'loss': val_loss,
+                                 'score': val_score.to_dict(),
+                                 "time": eval_time},
             })
             self._update_model()
-            history["train"].append({self.__loss.name: train_loss,
-                                     self.__score.name: train_score.to_dict()}, )
-            history["val"].append({self.__loss.name: val_loss,
-                                   self.__score.name: val_score.to_dict()})
-        return history, self.best_model.copy(), self.best_model.copy()
+            history["train"].append({'loss': train_loss,
+                                     'score': train_score.to_dict(),
+                                     'time': train_time})
+            history["val"].append({'loss': val_loss,
+                                   'score': val_score.to_dict(),
+                                   "time": eval_time})
+        result_history = {}
+        for key in history:
+            result_history[key] = {}
+            for epoch in history[key]:
+                for epoch_data_key in epoch:
+                    if epoch_data_key not in result_history[key]:
+                        result_history[key][epoch_data_key] = []
+                    result_history[key][epoch_data_key].append(epoch[epoch_data_key])
+        return result_history, self.best_model.copy(), self.best_model.copy()

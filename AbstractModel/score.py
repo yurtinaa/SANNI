@@ -89,7 +89,10 @@ class ScoreResult:
         return self
 
     def to_dict(self):
-        return self.__all_result.copy()
+        if len(self.__all_result) > 1:
+            return self.__all_result.copy()
+        else:
+            return list(self.__all_result.values())[0]
 
     def __iadd__(self, other: 'ScoreResult'):
         # fixme: не совсем ожидаемое поведение

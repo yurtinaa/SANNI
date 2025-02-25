@@ -104,7 +104,6 @@ class SANNI(AbstractImpute):
     def _dataset_factory(self):
         return ImputeLastDataset
 
-
     def _predictor_train(self, X: np.ndarray, Y: np.ndarray):
         X = torch.tensor(X, dtype=torch.float32)
         y = torch.tensor(Y, dtype=torch.float32)
@@ -138,6 +137,6 @@ class SANNI(AbstractImpute):
                 result_arr = []
                 for idx in range(0, X.shape[0],
                                  batch_size):
-                    batch_result = self.__model(X[idx:idx + batch_size]).detach().cpu().numpy()
+                    batch_result = self._model(X[idx:idx + batch_size]).detach().cpu().numpy()
                     result_arr.append(batch_result)
                 return np.concatenate(result_arr, axis=0)

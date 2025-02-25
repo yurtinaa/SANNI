@@ -1,5 +1,6 @@
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
+from typing import Dict
 
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -42,10 +43,25 @@ class MinMaxNormalizer(Normalizer):
         return self.scaler.inverse_transform(X)
 
 
-
 @dataclass
 class StandardNormalizer(MinMaxNormalizer):
     def fit(self, X: np.ndarray) -> np.ndarray:
         self.scaler = StandardScaler()
         self.scaler.fit(X)
+
         return self.scaler.transform(X)
+    @staticmethod
+    def init_from_params(scaler_params: Dict):
+        normalizer = StandardNormalizer()
+        # new_scaler = StandardScaler()
+        normalizer.scaler.mean_ = np.array(scaler_params["mean"])
+        normalizer.scaler.var_ = np.array(scaler_params["var"])
+        normalizer.scaler.scale_ = np.array(scaler_params["scale"])
+
+    def get_params(self) -> Dict:
+        scaler_params = {
+            "mean": self.scaler.mean_.tolist(),
+            "var": self.scaler.var_.tolist(),
+            "scale": self.scaler.scale_.tolist()
+        }
+        return scaler_params

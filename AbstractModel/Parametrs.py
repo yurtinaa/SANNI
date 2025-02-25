@@ -67,5 +67,9 @@ class TorchNNConfig(NeuralNetworkConfig):
 
 @dataclass
 class TimeSeriesConfig:
+    """
+    dim:
+    window
+    """
     dim: int
     window_size: int

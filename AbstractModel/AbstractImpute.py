@@ -20,11 +20,15 @@ class AbstractImpute(ABC):
 
     device: str = 'cpu'
     logger: AbstractLogger = None
-    __trainer: AbstractTrainer = None
-    __model: AbstractModel = None
+    _trainer: AbstractTrainer = None
+    _model: AbstractModel = None
 
     @abstractmethod
-    def train(self, X: np.ndarray, Y: np.ndarray):
+    def train(self, X: np.ndarray, Y: np.ndarray,
+              X_val: np.ndarray=None, Y_val: np.ndarray=None):
+        pass
+
+    def train_with_val(self, X: np.ndarray, Y: np.ndarray):
         pass
 
     @abstractmethod
