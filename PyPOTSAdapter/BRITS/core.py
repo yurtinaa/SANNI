@@ -10,6 +10,7 @@ from .backbone import BackboneBRITS
 import torch
 import numpy as np
 
+
 def calculate_mae(predictions, targets):
     """
     Вычисляет среднее абсолютное отклонение (MAE) между предсказаниями и целевыми значениями.
@@ -47,6 +48,7 @@ class BritsTorchError(BaseErrorTorch):
         forward_loss = torch.tensor(0.0).to(Y.device)
         # loss_forward_loss = torch.tensor(0.0).to(Y.device)
         for key, predict in h_dict['forward'].items():
+            # print('forward')
             index = X != X
             index_origin = Y != Y
 
@@ -56,6 +58,7 @@ class BritsTorchError(BaseErrorTorch):
             forward_loss += self.loss(X, Y, predict).mean()
         backward_loss = torch.tensor(0.0).to(Y.device)
         for key, predict in h_dict['backward'].items():
+            # print('back')
             predict_reverse = reverse_tensor(predict)
             index = X != X
             index_origin = Y != Y
@@ -65,10 +68,12 @@ class BritsTorchError(BaseErrorTorch):
 
             backward_loss += self.loss(X, Y, predict_reverse).mean()
         reconstruction_loss = (forward_loss + backward_loss) / 3
-        consistency_loss = self._get_consistency_loss(Y_pred['f_imputed_data'],
-                                                      Y_pred['b_imputed_data'])
+        # if torch.any((Y_pred['f_imputed_data'] - Y_pred['b_imputed_data']) == 0):
+        # print('consist')
+        # reconstruction_loss += self._get_consistency_loss(Y_pred['f_imputed_data'],
+        #                                                   Y_pred['b_imputed_data'])
         # print('f_my', loss_forward_loss / 3, 'b_my', reconstruction_loss)
-        return consistency_loss + reconstruction_loss
+        return reconstruction_loss
 
 
 class _BRITS(nn.Module):

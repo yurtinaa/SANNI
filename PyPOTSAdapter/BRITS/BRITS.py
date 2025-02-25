@@ -20,6 +20,7 @@ class ErrorFactoryBRITS(AbstractErrorFactory):
     name = 'BRITS error'
     inside_error: AbstractErrorFactory
 
+
     def __call__(self, frame_type: FrameworkType) -> AbstractError:
         if frame_type == FrameworkType.Torch:
             inside_error = self.inside_error(frame_type)

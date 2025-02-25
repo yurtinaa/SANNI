@@ -11,7 +11,7 @@ class ErrorType(str, Enum):
     CE = "cross_entropy"
     MPDE = "MPDE"
     LogCosh = "LogCosh"
-    QuantileLoss = "quantile"
+    QuantileLoss = "QuantileLoss"
     DTW = "DTW"
 
 

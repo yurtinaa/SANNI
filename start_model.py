@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import requests
+import torch
 from dotenv import load_dotenv
 import os
 
@@ -18,6 +19,8 @@ from .DataAnalyze.DataAnnotation import SnippetAnnotation
 from .DataProducers.Convertors import SliceTimeSeriesConvertor, DropMissingSubConvertor
 from .DataProducers.ImputeScenario import BlackoutScenario
 from .DataProducers.ModelsBehavior.AbstractBehavior import SerialImputeBehavior
+from .DataProducers.Normalizers import StandardNormalizer
+
 from .DataProducers.Normalizers import MinMaxNormalizer
 # from Logger.ConsoleLogger import ConsoleLogger
 from .Logger.FileLogger import FileLogger
@@ -47,8 +50,33 @@ def telegram_send(*args, **kwargs):
     requests.get(url)  #
 
 
+def set_seed(seed):
+    # Устанавливаем seed для Python
+    random.seed(seed)
+
+    # Устанавливаем seed для NumPy
+    np.random.seed(seed)
+
+    # Устанавливаем seed для PyTorch (CPU)
+    torch.manual_seed(seed)
+
+    # Если вы используете GPU (CUDA)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)  # Для всех устройств (если несколько GPU)
+
+    # Гарантируем, что поведение некоторых операций, например, вызовов cuDNN, будет детерминированным
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+
 def start_train(config):
     try:
+        torch.set_default_dtype(torch.float32)
+        print(config)
+        set_seed(34124)
+        names = [path.name[:-9] for path in Path('result').iterdir()]
+
         dataset_name = config.get("dataset")
 
         current_directory = Path.cwd()
@@ -60,7 +88,7 @@ def start_train(config):
 
         dataset_origin = np.loadtxt(f'{config.get("dataset")}.txt')
         dataset_blackout = BlackoutScenario().convert(dataset_origin)
-        normalizer = MinMaxNormalizer()
+        normalizer = StandardNormalizer()
         data_normalize = normalizer.fit(dataset_blackout)
         window_size = config.get('windows', 100)
         dataset_slice = SliceTimeSeriesConvertor(window_size).convert(data_normalize)
@@ -72,9 +100,7 @@ def start_train(config):
         error_config = config.get('error', {'type': 'MSE'})
         error = get_error(error_config['type'])(**error_config['params'])
         config['token'] = token_generate()
-        name = (f'{model_config["name"]}_{error}' + "_"
-                + dataset_name.replace('/', '-') + '_' + config['token'])
-        config['save_dir'] = name
+
     except BaseException as e:
         full_traceback = traceback.format_exc()
         config_as_str = '\n'.join([f'{key}: {value}' for key, value in config.items()])
@@ -103,6 +129,10 @@ def start_train(config):
             score_factory=get_score(ScoreType.MSE),
             early_stopping_patience=50
         )
+        name = f'{model_config["name"]}_' + "_" + dataset_name.split('/')[-1] + str(error)
+        name += '_' + token_generate()
+
+        config['save_dir'] = name
         save_dir = Path('result') / name
         save_dir.mkdir(exist_ok=True,
                        parents=True)
@@ -114,6 +144,8 @@ def start_train(config):
         expected_params = model_builder.__init__.__code__.co_varnames[1:]  # исключаем self
         filtered_config = {k: v for k, v in model_config.items() if k in expected_params}
         model = get_model(model_config['name'])(**filtered_config)
+
+
     except BaseException as e:
         full_traceback = traceback.format_exc()
         config_as_str = '\n'.join([f'{key}: {value}' for key, value in config.items()])
@@ -141,10 +173,12 @@ def start_train(config):
     json.dump(config, open(save_dir / 'config.json', 'w+'), indent=2)
     telegram_send("Start \n" + config_as_str + f"\n{result_mse}")
 
+
 def load_config(filename: str) -> dict:
     """Загружает конфигурацию из файла JSON."""
     with open(filename, 'r') as f:
         return json.load(f)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start training with a given config file.")
