@@ -57,11 +57,13 @@ class ImputeRandomDataset(BaseDataset):
 
         # Преобразуйте 1D индексы в индексы в тензоре
         row_indices, col_indices = np.unravel_index(nan_indices, X.shape)
+        col_indices = torch.tensor(col_indices).long()
+        row_indices = torch.tensor(row_indices).long()
 
         # Замените выбранные элементы на NaN
-        X[row_indices, col_indices] = float('nan')
+        X[row_indices, col_indices] = torch.nan
         if self.predict:
-            X[-1, :] = np.nan
+            X[-1, :] = torch.nan
 
         return X, self.y[idx]
 
